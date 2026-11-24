@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .pytest_cache/
 test_output.svg
+test_output_*.svg

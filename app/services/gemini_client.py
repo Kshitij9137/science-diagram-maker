@@ -40,6 +40,22 @@ def build_prompt(concept):
     )
 
 
+
+def build_correction_prompt(concept, previous_svg, failures):
+    """The message for the validation retry: what went wrong, plus the previous answer."""
+    problems = "\n".join(f"- {failure}" for failure in failures)
+    return (
+        build_prompt(concept)
+        + "\n\nYour previous answer failed these automatic checks:\n"
+        + problems
+        + "\n\nHere is your previous answer:\n"
+        + previous_svg[:30000]
+        + "\n\nFix every problem listed above and return the complete corrected SVG. "
+        "Return only the SVG, with no explanation."
+    )
+
+
+
 def extract_svg(text):
     """Cut out everything from '<svg' to the last '</svg>'.
 
