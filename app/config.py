@@ -47,3 +47,8 @@ RETRY_PROFILES = {
     "batch": {"delays": [15, 30, 60], "max_wait": 70},
     "live": {"delays": [3, 6, 12], "max_wait": 20},
 }
+
+
+# --- Files and batch generation ---
+RESULTS_FILE = BASE_DIR / "data" / "results.json"
+DELAY_BETWEEN_CONCEPTS = 8   # seconds to pause between concepts (free-tier limits are low)
