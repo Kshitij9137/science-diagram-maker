@@ -20,3 +20,10 @@ VIEWBOX_HEIGHT = 600
 # Upper limit on the model's reply. Thinking tokens count toward this too,
 # so keep it generous or the SVG may be cut off halfway.
 MAX_OUTPUT_TOKENS = 16000
+
+
+# --- SVG validation settings ---
+MIN_LABELS = 3            # minimum number of <text> labels
+BOUNDS_TOLERANCE = 2.0    # allowed overshoot past the viewBox, in SVG units
+CHAR_WIDTH_FACTOR = 0.55  # rough text width = font-size * this * number of characters
+DEFAULT_FONT_SIZE = 16.0  # used when a <text> has no font-size
