@@ -21,3 +21,36 @@ img.diagram { width: 320px; max-width: 100%; border: 1px solid #dde3ea; border-r
 .small { font-size: .78rem; margin-top: .15rem; }
 
 .error { background: #fddcdc; color: #a11a1a; border: 1px solid #e99; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+
+
+/* --- generate panel --- */
+.panel { background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.panel h2 { margin: 0 0 .4rem; font-size: 1.1rem; }
+.panel p { margin: 0 0 .8rem; }
+.generate-controls { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+select { padding: .45rem .6rem; border: 1px solid #b8c2cf; border-radius: 6px; font-size: 1rem; background: #fff; }
+
+/* --- buttons --- */
+button { font: inherit; cursor: pointer; border-radius: 6px; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+.primary { background: #1f3a5f; color: #fff; border: none; padding: .5rem 1.2rem; font-weight: 600; }
+.primary.loading::before {
+  content: ""; display: inline-block; width: .9em; height: .9em; margin-right: .5em;
+  border: 2px solid #fff; border-right-color: transparent; border-radius: 50%;
+  vertical-align: -.1em; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- review column --- */
+.review-cell { min-width: 220px; }
+.review-status { font-size: .85rem; color: #5f6c7b; margin-bottom: .4rem; }
+.btn-row { display: flex; gap: .5rem; margin-bottom: .5rem; }
+.btn { padding: .35rem .9rem; border: 2px solid #b8c2cf; background: #fff; font-weight: 600; }
+.btn.approve.active { background: #d6f5e0; border-color: #11693a; color: #11693a; }
+.btn.reject.active { background: #fddcdc; border-color: #a11a1a; color: #a11a1a; }
+textarea { width: 100%; font: inherit; font-size: .9rem; padding: .4rem; border: 1px solid #b8c2cf; border-radius: 6px; resize: vertical; }
+.warn { color: #8a5a00; background: #fff3d6; padding: .3rem .5rem; border-radius: 4px; margin-top: .4rem; }
+
+/* --- live / busy states --- */
+.badge.live { background: #fff3d6; color: #8a5a00; margin-top: .4rem; }
+tr.busy { opacity: .5; }

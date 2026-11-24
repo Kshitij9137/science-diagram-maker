@@ -9,11 +9,31 @@
 <body>
   <header>
     <h1>Science Diagram Maker</h1>
-    <p>AI-generated animated science diagrams, checked by code.</p>
+    <p>AI-generated animated science diagrams, checked by code and reviewed by you.</p>
   </header>
 
   <main>
-    <div id="error-banner" class="error" hidden></div>
+    <div id="error-banner" class="error" role="alert" hidden></div>
+
+    <section class="panel">
+      <h2>Generate live</h2>
+      <p class="muted">
+        Runs the full pipeline for one concept: Gemini, then 5 code checks, then one retry if a
+        check fails. It can take 10 to 60 seconds. The new result replaces that row for now;
+        refreshing the page brings back the saved version.
+      </p>
+      <div class="generate-controls">
+        <select id="concept-select" aria-label="Concept to generate" disabled></select>
+        <button id="generate-btn" class="primary" disabled>Generate</button>
+        <span id="generate-status" class="muted" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <p class="muted small">
+      Approve/Reject decisions and notes are saved in <strong>this browser only</strong>
+      (localStorage), so they are not shared between devices or people.
+    </p>
+
     <p id="loading">Loading results…</p>
 
     <div class="table-wrap">
@@ -25,6 +45,7 @@
             <th>Checks</th>
             <th>Cost (estimate)</th>
             <th>Retries</th>
+            <th>Review</th>
           </tr>
         </thead>
         <tbody id="results-body"></tbody>
