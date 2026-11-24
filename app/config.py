@@ -11,7 +11,7 @@ load_dotenv(BASE_DIR / ".env")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Confirm this exact ID in AI Studio. If it fails, see the troubleshooting table below.
-MODEL_NAME = "gemini-3.5-flash-lite"
+MODEL_NAME = "gemini-3.6-flash"
 
 # The drawing area we ask the model to use
 VIEWBOX_WIDTH = 800
@@ -30,12 +30,16 @@ DEFAULT_FONT_SIZE = 16.0  # used when a <text> has no font-size
 
 
 
-# --- Pricing: USD per 1 million tokens ---
-# TODO: open https://ai.google.dev/gemini-api/docs/pricing, find your model, and
-# confirm these two numbers. Then write today's date in the comment below.
-# Verified on: ____
-PRICE_INPUT_PER_M = 0.30
-PRICE_OUTPUT_PER_M = 2.50   # Gemini bills thinking tokens at the output price
+# --- Standard paid-tier pricing: USD per 1 million tokens ---
+# Source: https://ai.google.dev/gemini-api/docs/pricing
+# Verified on: 2026-11-24
+PRICES = {
+    "gemini-3.5-flash-lite": {"input": 0.30, "output": 2.50},
+    # Gemini 3.5 Flash is deprecated and routed to Gemini 3.6 Flash.
+    "gemini-3.5-flash": {"input": 0.75, "output": 3.75},
+    "gemini-3.6-flash": {"input": 0.75, "output": 3.75},
+}
+DEFAULT_PRICE = PRICES["gemini-3.6-flash"]
 
 # --- Retry settings ---
 MAX_API_RETRIES = 3          # extra tries after a 429/503 (so up to 4 calls in total)

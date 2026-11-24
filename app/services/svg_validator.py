@@ -16,6 +16,8 @@ _TRANSLATE = re.compile(
 )
 
 ANIMATION_TAGS = {"animate", "animatetransform", "animatemotion", "set"}
+# Children with these tags move their parent, so its static position means nothing
+MOVING_TAGS = {"animatemotion", "animatetransform"}
 
 # Parts of an SVG that are not drawn directly, so we don't measure them
 SKIP_TAGS = {"defs", "clippath", "mask", "pattern", "symbol", "marker",
@@ -97,22 +99,41 @@ def _get_viewbox(root):
     return numbers
 
 
-def _text_box(elem):
+def _css_rules(root):
+    """Very small CSS reader: {'.title': 'font-size:24px;text-anchor:middle', 'text': ...}."""
+    rules = {}
+    for selectors, body in re.findall(r"([^{}@]+)\{([^{}]*)\}", _collect_css(root)):
+        for selector in selectors.split(","):
+            rules[selector.strip()] = rules.get(selector.strip(), "") + ";" + body
+    return rules
+
+
+def _effective_style(elem, rules):
+    """Rules for 'text' and the element's classes, then its inline style (last wins)."""
+    parts = [rules.get("text", "")]
+    for cls in (elem.get("class") or "").split():
+        parts.append(rules.get("." + cls, ""))
+        parts.append(rules.get("text." + cls, ""))
+    parts.append(elem.get("style", ""))
+    return ";".join(parts)
+
+
+def _text_box(elem, rules=None):
     """Estimate the box a <text> covers. Returns None if the text is empty."""
     content = _text_content(elem)
     if not content:
         return None
-    style = elem.get("style", "")
+    style = _effective_style(elem, rules or {})
 
-    size = _num(elem, "font-size", None)
-    if size is None:
-        match = re.search(r"font-size\s*:\s*([\d.]+)", style)
-        size = float(match.group(1)) if match else config.DEFAULT_FONT_SIZE
+    # CSS (classes / inline style) beats the plain attribute, so look there first
+    matches = re.findall(r"font-size\s*:\s*([\d.]+)", style)
+    if matches:
+        size = float(matches[-1])
+    else:
+        size = _num(elem, "font-size", None) or config.DEFAULT_FONT_SIZE
 
-    anchor = elem.get("text-anchor", "")
-    if not anchor:
-        match = re.search(r"text-anchor\s*:\s*(\w+)", style)
-        anchor = match.group(1) if match else "start"
+    matches = re.findall(r"text-anchor\s*:\s*(\w+)", style)
+    anchor = matches[-1] if matches else elem.get("text-anchor", "start")
 
     x = _first_number(elem.get("x"))
     y = _first_number(elem.get("y"))
@@ -128,10 +149,10 @@ def _text_box(elem):
     return (x0, y - size, x0 + width, y + 0.25 * size)
 
 
-def _element_box(elem, tag):
+def _element_box(elem, tag, rules=None):
     """Return (x0, y0, x1, y1), the string 'unchecked', or None if not a shape."""
     if tag == "text":
-        return _text_box(elem)
+        return _text_box(elem, rules)
 
     if tag == "circle":
         cx, cy, r = _num(elem, "cx"), _num(elem, "cy"), _num(elem, "r")
@@ -179,6 +200,7 @@ def _collect_boxes(root):
     """Walk the whole SVG. Return (list of (tag, x0, y0, x1, y1), unchecked_count)."""
     boxes = []
     state = {"unchecked": 0}
+    rules = _css_rules(root)
 
     def walk(elem, dx, dy):
         tag = _local(elem.tag)
@@ -196,7 +218,11 @@ def _collect_boxes(root):
                 state["unchecked"] += 1
                 return
 
-        result = _element_box(elem, tag)
+        if any(_local(child.tag) in MOVING_TAGS for child in elem):
+            state["unchecked"] += 1   # moved by animateMotion/animateTransform: skip it
+            return
+
+        result = _element_box(elem, tag, rules)
         if result == "unchecked":
             state["unchecked"] += 1
         elif result is not None:

@@ -111,3 +111,19 @@ def test_external_image_fails_security():
 def test_internal_reference_is_allowed():
     ok = GOOD_SVG.replace("</svg>", '<use href="#thing"/></svg>')
     assert "security" not in failed(ok)
+
+def test_shape_moved_by_animate_motion_is_not_measured():
+    # <circle r="6"> has no cx/cy; animateMotion moves it, so (0,0) is not its real position
+    svg = GOOD_SVG.replace(
+        "</svg>",
+        '<circle r="6"><animateMotion dur="4s" repeatCount="indefinite" path="M 10 10 H 700"/></circle></svg>',
+    )
+    assert "viewbox_bounds" not in failed(svg)
+
+
+def test_css_class_text_anchor_and_size_are_respected():
+    # centred by a CSS class: x=400 is the middle, so it fits. Without reading the class, it overflows.
+    svg = GOOD_SVG.replace(
+        "</style>", ".mid { text-anchor: middle; font-size: 20px; }</style>"
+    ).replace("</svg>", '<text class="mid" x="400" y="100">A fairly long centred caption here</text></svg>')
+    assert "viewbox_bounds" not in failed(svg)

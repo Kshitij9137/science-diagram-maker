@@ -13,7 +13,21 @@ from app.services.svg_validator import all_passed, failure_messages, validate_sv
 
 log = logging.getLogger("diagram")
 
-RETRYABLE_CODES = {429, 503}
+RETRYABLE_CODES = {429, 500, 502, 503, 504}
+
+
+TRANSIENT_ERROR_NAMES = {
+    "RemoteProtocolError",
+    "ConnectError",
+    "ConnectTimeout",
+    "ReadTimeout",
+    "TimeoutError",
+}
+
+
+def is_transient_error(error):
+    """Remote disconnects and network timeouts can occur before an HTTP status exists."""
+    return type(error).__name__ in TRANSIENT_ERROR_NAMES or isinstance(error, TimeoutError)
 
 
 class GenerationError(Exception):
@@ -80,7 +94,7 @@ def call_with_api_retry(call_model, prompt, profile, sleep):
             return call_model(prompt), retries
         except Exception as error:
             code = get_status_code(error)
-            retryable = code in RETRYABLE_CODES
+            retryable = code in RETRYABLE_CODES or is_transient_error(error)
             if not retryable or retries >= config.MAX_API_RETRIES:
                 raise GenerationError(
                     friendly_message(code, error), code, api_retries=retries
@@ -90,8 +104,8 @@ def call_with_api_retry(call_model, prompt, profile, sleep):
             wait = min(max(base, suggested_delay(error)), settings["max_wait"])
             wait += random.uniform(0, 1)  # small random extra so retries don't all line up
             log.warning(
-                "Gemini error %s. Waiting %.1fs, then API retry %d of %d",
-                code, wait, retries + 1, config.MAX_API_RETRIES,
+                "Gemini error %s (%s). Waiting %.1fs, then API retry %d of %d",
+                code, str(error)[:150], wait, retries + 1, config.MAX_API_RETRIES,
             )
             sleep(wait)
             retries += 1
@@ -199,12 +213,14 @@ def generate_diagram(concept_id, call_model=None, sleep=time.sleep, profile="bat
     total_thoughts = sum(a["thought_tokens"] for a in attempts)
     api_retries = sum(a["api_retries"] for a in attempts)
     passed = all_passed(final["checks"])
+    used_model = final["model"] or scored[0]["model"] or config.MODEL_NAME
+    price = config.PRICES.get(used_model, config.DEFAULT_PRICE)
 
     result = {
         "concept_id": concept_id,
         "concept_name": concept["name"],
         "subject": concept["subject"],
-        "model": final["model"] or scored[0]["model"] or config.MODEL_NAME,
+        "model": used_model,
         "svg": final["svg"] if final["svg_ok"] else "",
         "status": "passed" if passed else "failed",
         "checks": final["checks"],
@@ -214,10 +230,10 @@ def generate_diagram(concept_id, call_model=None, sleep=time.sleep, profile="bat
             "thoughts": total_thoughts,
             "billed_output": total_output + total_thoughts,
         },
-        "cost_usd": estimate_cost(total_input, total_output, total_thoughts),
+        "cost_usd": estimate_cost(total_input, total_output, total_thoughts, used_model),
         "pricing": {
-            "input_per_million": config.PRICE_INPUT_PER_M,
-            "output_per_million": config.PRICE_OUTPUT_PER_M,
+            "input_per_million": price["input"],
+            "output_per_million": price["output"],
             "note": "Estimated paid-tier equivalent. The free tier charges $0.",
         },
         "retries": {

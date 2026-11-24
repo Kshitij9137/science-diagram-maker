@@ -1,0 +1,2926 @@
+
+======================================================================
+FILE: export_code.py
+======================================================================
+import os
+
+project_dir = r"D:\PROJECTS\science-diagram-maker"  # change this
+output_file = "project_code.txt"
+
+# Only include meaningful code files
+include_extensions = {
+    ".py", ".js", ".ts", ".html", ".css",
+    ".cpp", ".c", ".java", ".json", ".svg"
+}
+
+# Folders to ignore
+exclude_dirs = {
+    "node_modules", ".git", "__pycache__",
+    "dist", "build", ".next", "venv", ".vscode"
+}
+
+# Files to ignore
+exclude_files = {
+    "package-lock.json", "yarn.lock"
+}
+
+# Max file size -> 200 KB
+MAX_FILE_SIZE = 200 * 1024
+
+total_lines = 0
+
+with open(output_file, "w", encoding="utf-8") as outfile:
+    for root, dirs, files in os.walk(project_dir):
+
+        # Remove unwanted directories
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+
+        for file in files:
+            file_path = os.path.join(root, file)
+            rel_path = os.path.relpath(file_path, project_dir)
+
+            # Skip unwanted files
+            if file in exclude_files:
+                continue
+
+            # Skip by extension
+            _, ext = os.path.splitext(file)
+            if ext.lower() not in include_extensions:
+                continue
+
+            # Skip minified files
+            if ".min." in file:
+                continue
+
+            # Skip large files
+            if os.path.getsize(file_path) > MAX_FILE_SIZE:
+                continue
+
+            try:
+                with open(file_path, "r", encoding="utf-8") as infile:
+                    lines = infile.readlines()
+
+                # Skip files with too many lines (likely generated)
+                if len(lines) > 2000:
+                    continue
+
+                outfile.write("\n" + "="*70 + "\n")
+                outfile.write(f"FILE: {rel_path}\n")
+                outfile.write("="*70 + "\n")
+
+                outfile.writelines(lines)
+                total_lines += len(lines)
+
+            except:
+                continue
+
+print(f"✅ Done! Clean code exported. Total lines: {total_lines}")
+======================================================================
+FILE: test_output.svg
+======================================================================
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <title>GCSE Physics: Series Circuit</title>
+  
+  <style>
+    .label { font-family: sans-serif; font-size: 18px; fill: #2c3e50; font-weight: bold; }
+    .sublabel { font-family: sans-serif; font-size: 14px; fill: #7f8c8d; }
+    .wire { fill: none; stroke: #34495e; stroke-width: 4; stroke-linejoin: round; }
+    .electron { fill: #e74c3c; }
+  </style>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f8f9fa" rx="15" ry="15"/>
+  
+  <!-- Title -->
+  <text x="400" y="45" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="bold" fill="#2c3e50">Series Circuit</text>
+  <text x="400" y="70" text-anchor="middle" class="sublabel">Single loop: Current is the same everywhere, Voltage is shared</text>
+
+  <!-- Circuit Board Panel Background -->
+  <rect x="150" y="100" width="500" height="420" fill="#ffffff" stroke="#bdc3c7" stroke-width="2" rx="10" ry="10"/>
+
+  <!-- Path for the wire (used for visual and motion) -->
+  <path id="circuit-path" d="M 230 440 L 570 440 L 570 180 L 230 180 Z" class="wire" />
+
+  <!-- COMPONENTS -->
+
+  <!-- Cell (Bottom Wire: x=230 to 570, y=440) -> Let's place cell on left vertical wire or bottom wire. Let's put Cell on bottom wire (x=360 to 440, y=440) -->
+  <!-- Redefine wire segments to make space for components -->
+  <!-- Let's redraw wires cleanly with component gaps -->
+  <path d="M 230 440 L 350 440" class="wire" />
+  <!-- Cell Symbol -->
+  <g transform="translate(350, 440)">
+    <line x1="0" y1="-15" x2="0" y2="15" stroke="#34495e" stroke-width="4" />
+    <line x1="12" y1="-25" x2="12" y2="25" stroke="#34495e" stroke-width="6" />
+    <line x1="24" y1="-15" x2="24" y2="15" stroke="#34495e" stroke-width="4" />
+    <line x1="36" y1="-25" x2="36" y2="25" stroke="#34495e" stroke-width="6" />
+    <text x="18" y="45" text-anchor="middle" class="label" font-size="16">Cell (12V)</text>
+  </g>
+  <path d="M 386 440 L 570 440" class="wire" />
+
+  <!-- Right Wire (x=570, y=440 to 180) -> Put Lamp in the middle (y=290-330) -->
+  <path d="M 570 440 L 570 330" class="wire" />
+  <!-- Lamp Symbol -->
+  <g transform="translate(570, 310)">
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#34495e" stroke-width="4"/>
+    <line x1="-14" y1="-14" x2="14" y2="14" stroke="#34495e" stroke-width="3"/>
+    <line x1="-14" y1="14" x2="14" y2="-14" stroke="#34495e" stroke-width="3"/>
+    <text x="45" y="6" class="label">Lamp</text>
+  </g>
+  <path d="M 570 290 L 570 180" class="wire" />
+
+  <!-- Top Wire (y=180, x=570 to 230) -> Put Resistor in middle (x=360-440) -->
+  <path d="M 570 180 L 430 180" class="wire" />
+  <!-- Resistor Symbol -->
+  <g transform="translate(370, 180)">
+    <polyline points="-30,0 -24,-12 -12,12 0,-12 12,12 24,-12 30,0" fill="none" stroke="#34495e" stroke-width="4" stroke-linejoin="round"/>
+    <text x="0" y="-25" text-anchor="middle" class="label">Resistor</text>
+  </g>
+  <path d="M 310 180 L 230 180" class="wire" />
+
+  <!-- Left Wire (x=230, y=180 to 440) -->
+  <path d="M 230 180 L 230 440" class="wire" />
+
+
+  <!-- ANIMATED ELECTRONS (Current Flow) -->
+  <!-- Total perimeter of circuit: (570-230) + (440-180) + (570-230) + (440-180) = 340 + 260 + 340 + 260 = 1200 units -->
+  <!-- Path starts at top-left corner (230, 180) going right. Let's trace carefully: 
+       Start: M 230 180 
+       H 570 (length 340)
+       V 440 (length 260)
+       H 230 (length 340)
+       V 180 (length 260)
+       Total = 1200 px.
+  -->
+  
+  <path id="electron-path" d="M 230 180 H 570 V 440 H 230 V 180" fill="none" />
+
+  <!-- Multiple animated dots for current -->
+  <g class="electron">
+    <circle r="6">
+      <animateMotion dur="4s" repeatCount="indefinite">
+        <mpath href="#electron-path"/>
+      </animateMotion>
+    </circle>
+    <circle r="6">
+      <animateMotion dur="4s" begin="-1s" repeatCount="indefinite">
+        <mpath href="#electron-path"/>
+      </animateMotion>
+    </circle>
+    <circle r="6">
+      <animateMotion dur="4s" begin="-2s" repeatCount="indefinite">
+        <mpath href="#electron-path"/>
+      </animateMotion>
+    </circle>
+    <circle r="6">
+      <animateMotion dur="4s" begin="-3s" repeatCount="indefinite">
+        <mpath href="#electron-path"/>
+      </animateMotion>
+    </circle>
+  </g>
+
+
+  <!-- EXPLANATORY ANNOTATIONS (GCSE focus) -->
+  <g transform="translate(180, 540)">
+    <rect x="0" y="0" width="440" height="42" fill="#e8f4f8" rx="6" ry="6" stroke="#bcefcc" stroke-width="0"/>
+    <text x="220" y="26" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#2c3e50" font-weight="bold">
+      Current ($I$) is identical at any point in the loop
+    </text>
+  </g>
+
+</svg>
+======================================================================
+FILE: test_output_1.svg
+======================================================================
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <title>Pythagoras' Theorem</title>
+  
+  <style>
+    text {
+      font-family: sans-serif;
+      font-weight: bold;
+    }
+    .label-a { fill: #2b6cb0; }
+    .label-b { fill: #c53030; }
+    .label-c { fill: #2f855a; }
+    
+    @keyframes pulse-sq {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.5; }
+    }
+    .sq-anim {
+      animation: pulse-sq 3s infinite ease-in-out;
+    }
+  </style>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f7fafc" />
+
+  <!-- Title & Subtitle -->
+  <text x="400" y="45" font-size="28" text-anchor="middle" fill="#2d3748">Pythagoras' Theorem</text>
+  <text x="400" y="75" font-size="18" text-anchor="middle" fill="#4a5568">a² + b² = c²</text>
+
+  <!-- Definitions -->
+  <rect x="500" y="420" width="260" height="130" rx="10" fill="#ffffff" stroke="#cbd5e0" stroke-width="2"/>
+  <text x="520" y="455" font-size="16" class="label-a">a² : Area on side a</text>
+  <text x="520" y="490" font-size="16" class="label-b">b² : Area on side b</text>
+  <text x="520" y="525" font-size="16" class="label-c">c² : Area on hypotenuse c</text>
+
+  <!-- 
+       Right-angled triangle coordinates:
+       Let's place vertex C (right angle) at (320, 320)
+       Side a goes UP to (320, 170) -> length 150 (3 units * 50)
+       Side b goes RIGHT to (470, 320) -> length 150 (3 units * 50)  Wait, let's make it 3-4-5 scale or similar.
+       Let's use scale: 1 unit = 40 pixels.
+       a = 3 units = 120 px
+       b = 4 units = 160 px
+       c = 5 units = 200 px
+       
+       Right angle at (260, 340)
+       Top vertex: A_top = (260, 340 - 120) = (260, 220)  [side a = 120]
+       Right vertex: B_right = (260 + 160, 340) = (420, 340) [side b = 160]
+       Hypotenuse connects (260, 220) to (420, 340) [length = 200]
+  -->
+
+  <!-- Squares on sides -->
+  
+  <!-- Square on side a (left, 120x120) built outwards to the left -->
+  <g class="sq-anim">
+    <rect x="140" y="220" width="120" height="120" fill="#ebf8ff" stroke="#3182ce" stroke-width="3"/>
+  </g>
+  <!-- Grid lines for square a -->
+  <line x1="140" y1="260" x2="260" y2="260" stroke="#90cdf4" stroke-dasharray="4"/>
+  <line x1="140" y1="300" x2="260" y2="300" stroke="#90cdf4" stroke-dasharray="4"/>
+  <line x1="180" y1="220" x2="180" y2="340" stroke="#90cdf4" stroke-dasharray="4"/>
+  <line x1="220" y1="220" x2="220" y2="340" stroke="#90cdf4" stroke-dasharray="4"/>
+
+  <!-- Square on side b (bottom, 160x160) built outwards downwards -->
+  <g class="sq-anim">
+    <rect x="260" y="340" width="160" height="160" fill="#fff5f5" stroke="#e53e3e" stroke-width="3"/>
+  </g>
+  <!-- Grid lines for square b -->
+  <line x1="300" y1="340" x2="300" y2="500" stroke="#feb2b2" stroke-dasharray="4"/>
+  <line x1="340" y1="340" x2="340" y2="500" stroke="#feb2b2" stroke-dasharray="4"/>
+  <line x1="380" y1="340" x2="380" y2="500" stroke="#feb2b2" stroke-dasharray="4"/>
+  <line x1="260" y1="380" x2="420" y2="380" stroke="#feb2b2" stroke-dasharray="4"/>
+  <line x1="260" y1="420" x2="420" y2="420" stroke="#feb2b2" stroke-dasharray="4"/>
+  <line x1="260" y1="460" x2="420" y2="460" stroke="#feb2b2" stroke-dasharray="4"/>
+
+  <!-- Square on hypotenuse c (200x200) built outwards up-right -->
+  <!-- Vector from (260,220) to (420,340) is dx=160, dy=120. 
+       Perpendicular outward vector is (-120, 160). Normalized & scaled to 200: 
+       Actually, standard rotation: dx' = dy = 120, dy' = -dx = -160.
+       Top-left of hypotenuse square is (260, 220), top-right is (420, 340).
+       Wait, let's construct it precisely using polygon vertices:
+       P1 = (260, 220)
+       P2 = (420, 340)
+       P3 = P2 + (-120, -160) = (300, 180) -> Let's check geometry:
+       Vector P1->P2 is (160, 120). Perp outward is (-120, 160).
+       P4 = P1 + (-120, 160) = (140, 380)? No, let's use exact coordinates for 3-4-5 triangle square.
+       For a triangle with legs 160 and 120, hypotenuse is 200.
+       The square on hypotenuse extends upwards and to the right.
+       Vertices: (260, 220), (420, 340), and offset by (-120, 160)... 
+       Let's use simple verified coordinates for the c² square:
+       Vertex A: (260, 220)
+       Vertex B: (420, 340)
+       Vertex C_sq: (540, 180)
+       Vertex D_sq: (380, 60)
+       Let's verify side lengths:
+       (420-260)^2 + (340-220)^2 = 160^2 + 120^2 = 25600 + 14400 = 40000 -> sqrt = 200. Correct.
+       (540-420)^2 + (180-340)^2 = 120^2 + (-160)^2 = 14400 + 25600 = 40000 -> sqrt = 200. Correct.
+       (380-540)^2 + (60-180)^2 = (-160)^2 + (-120)^2 = 25600 + 14400 = 40000 -> sqrt = 200. Correct.
+       (260-380)^2 + (220-60)^2 = (-120)^2 + (160)^2 = 14400 + 25600 = 40000 -> sqrt = 200. Correct.
+  -->
+  <g class="sq-anim">
+    <polygon points="260,220 420,340 540,180 380,60" fill="#f0fff4" stroke="#38a169" stroke-width="3"/>
+  </g>
+
+  <!-- Central Right-Angled Triangle (drawn on top of squares) -->
+  <polygon points="260,220 260,340 420,340" fill="#fff" stroke="#1a202c" stroke-width="4" stroke-linejoin="round"/>
+
+  <!-- Right angle marker -->
+  <polyline points="260,320 280,320 280,340" fill="none" stroke="#1a202c" stroke-width="2"/>
+
+  <!-- Side Labels -->
+  <!-- Side a -->
+  <text x="235" y="285" font-size="20" class="label-a" text-anchor="middle">a</text>
+  <!-- Side b -->
+  <text x="340" y="365" font-size="20" class="label-b" text-anchor="middle">b</text>
+  <!-- Side c (Hypotenuse) -->
+  <text x="325" y="270" font-size="20" class="label-c" text-anchor="middle">c</text>
+
+  <!-- Square area labels inside the squares -->
+  <text x="200" y="285" font-size="22" class="label-a" text-anchor="middle" opacity="0.8">a²</text>
+  <text x="340" y="425" font-size="22" class="label-b" text-anchor="middle" opacity="0.8">b²</text>
+  <text x="450" y="235" font-size="22" class="label-c" text-anchor="middle" opacity="0.8">c²</text>
+
+  <!-- Animated floating indicator to show a² + b² = c² -->
+  <g>
+    <rect x="80" y="500" width="360" height="60" rx="8" fill="#ffffff" stroke="#cbd5e0" stroke-width="2"/>
+    <text x="260" y="536" font-size="20" text-anchor="middle" fill="#2d3748">
+      <tspan class="label-a">a²</tspan> <tspan fill="#2d3748">+</tspan> <tspan class="label-b">b²</tspan> <tspan fill="#2d3748">=</tspan> <tspan class="label-c">c²</tspan>
+    </text>
+    
+    <!-- Pulsing highlight circle -->
+    <circle cx="110" cy="530" r="15" fill="#3182ce" opacity="0.2">
+      <animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+</svg>
+======================================================================
+FILE: test_output_2.svg
+======================================================================
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <title>Parts of a Circle</title>
+  
+  <!-- CSS Animations -->
+  <style>
+    @keyframes pulseCircumference {
+      0% { stroke-dashoffset: 1005; opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 0.4; }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .animated-circ {
+      stroke-dasharray: 1005;
+      animation: pulseCircumference 4s ease-in-out infinite;
+    }
+    .fade-in {
+      animation: fadeIn 1.5s ease-out forwards;
+    }
+    .label-box {
+      font-family: sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      fill: #1e293b;
+    }
+    .sub-label {
+      font-family: sans-serif;
+      font-size: 14px;
+      fill: #475569;
+    }
+  </style>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f8fafc" rx="16" />
+
+  <!-- Title -->
+  <text x="400" y="40" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="#0f172a">Parts of a Circle</text>
+  <text x="400" y="68" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#64748b">GCSE Mathematics</text>
+
+  <!-- Main Circle Group (Centered at 400, 310, Radius 160) -->
+  <g transform="translate(400, 310)">
+    
+    <!-- Circle Fill -->
+    <circle cx="0" cy="0" r="160" fill="#e2e8f0" fill-opacity="0.5" />
+
+    <!-- Diameter Line (Horizontal from (-160,0) to (160,0)) -->
+    <line x1="-160" y1="0" x2="160" y2="0" stroke="#ef4444" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Radius Line (From (0,0) to top-right approx (113, -113)) -->
+    <line x1="0" y1="0" x2="113.14" y2="-113.14" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Circumference Animated Highlight -->
+    <circle cx="0" cy="0" r="160" fill="none" stroke="#10b981" stroke-width="6" class="animated-circ" />
+
+    <!-- Centre Point -->
+    <circle cx="0" cy="0" r="7" fill="#0f172a" />
+    <circle cx="0" cy="0" r="12" fill="none" stroke="#0f172a" stroke-width="2">
+      <animate attributeName="r" values="8;16;8" dur="2s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="1;0;1" dur="2s" repeatCount="indefinite" />
+    </circle>
+
+    <!-- Centre Label Point Anchor -->
+    <text x="-12" y="-15" class="label-box" font-size="16">Centre</text>
+
+  </g>
+
+  <!-- Labels and Callouts -->
+
+  <!-- 1. Diameter Label (Bottom) -->
+  <g class="fade-in" style="animation-delay: 0.2s;">
+    <line x1="240" y1="310" x2="560" y2="310" stroke="#ef4444" stroke-dasharray="4,4" stroke-width="1.5" opacity="0.6"/>
+    <rect x="315" y="325" width="170" height="40" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="2" />
+    <text x="400" y="350" text-anchor="middle" class="label-box" fill="#ef4444">Diameter</text>
+    <text x="400" y="380" text-anchor="middle" class="sub-label">Passes through centre (2 × r)</text>
+  </g>
+
+  <!-- 2. Radius Label (Top Right) -->
+  <g class="fade-in" style="animation-delay: 0.4s;">
+    <line x1="400" y1="310" x2="513" y2="197" stroke="#3b82f6" stroke-dasharray="4,4" stroke-width="1.5" opacity="0.6"/>
+    <rect x="530" y="150" width="160" height="40" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="2" />
+    <text x="610" y="175" text-anchor="middle" class="label-box" fill="#3b82f6">Radius</text>
+    <text x="610" y="205" text-anchor="middle" class="sub-label">Centre to edge</text>
+  </g>
+
+  <!-- 3. Circumference Label (Top Left) -->
+  <g class="fade-in" style="animation-delay: 0.6s;">
+    <path d="M 287,197 Q 340,150 400,150" fill="none" stroke="#10b981" stroke-dasharray="4,4" stroke-width="1.5" opacity="0.6"/>
+    <rect x="90" y="150" width="180" height="40" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="2" />
+    <text x="180" y="175" text-anchor="middle" class="label-box" fill="#10b981">Circumference</text>
+    <text x="180" y="205" text-anchor="middle" class="sub-label">Distance around edge</text>
+  </g>
+
+  <!-- 4. Centre Label (Bottom Left) -->
+  <g class="fade-in" style="animation-delay: 0.8s;">
+    <line x1="400" y1="310" x2="240" y2="450" stroke="#0f172a" stroke-dasharray="4,4" stroke-width="1.5" opacity="0.6"/>
+    <rect x="150" y="450" width="150" height="40" rx="8" fill="#ffffff" stroke="#0f172a" stroke-width="2" />
+    <text x="225" y="475" text-anchor="middle" class="label-box">Centre</text>
+    <text x="225" y="505" text-anchor="middle" class="sub-label">Middle point (origin)</text>
+  </g>
+
+</svg>
+======================================================================
+FILE: test_output_3.svg
+======================================================================
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <title>GCSE Physics Series Circuit</title>
+  
+  <style>
+    .bg { fill: #f8fafc; }
+    .wire { fill: none; stroke: #334155; stroke-width: 4; stroke-linejoin: round; }
+    .label { font-family: sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; text-anchor: middle; }
+    .sublabel { font-family: sans-serif; font-size: 14px; fill: #64748b; text-anchor: middle; }
+    .title { font-family: sans-serif; font-size: 22px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
+    .electron { fill: #2563eb; }
+  </style>
+
+  <rect width="800" height="600" class="bg"/>
+
+  <!-- Diagram Title -->
+  <text x="400" y="45" class="title">Series Circuit: Single Loop &amp; Current</text>
+
+  <!-- Explanation Box -->
+  <rect x="150" y="65" width="500" height="55" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="90" class="sublabel" font-size="15" font-weight="bold">Current is the same everywhere. Voltage is shared.</text>
+  <text x="400" y="110" class="sublabel" font-size="13">One continuous loop with no branches.</text>
+
+  <!-- CIRCUIT WIRES (Single Closed Loop) - inset safely within 20px margin -->
+  <rect x="220" y="170" width="360" height="340" rx="12" class="wire"/>
+
+  <!-- COMPONENTS -->
+
+  <!-- Cell (Top) -->
+  <g transform="translate(400, 170)">
+    <line x1="-30" y1="-12" x2="-30" y2="12" stroke="#334155" stroke-width="6"/>
+    <line x1="-15" y1="-22" x2="-15" y2="22" stroke="#334155" stroke-width="4"/>
+    <line x1="15" y1="-12" x2="15" y2="12" stroke="#334155" stroke-width="6"/>
+    <line x1="30" y1="-22" x2="30" y2="22" stroke="#334155" stroke-width="4"/>
+    <text x="-50" y="-5" class="label" font-size="20">+</text>
+    <text x="50" y="-5" class="label" font-size="20">-</text>
+  </g>
+  <text x="400" y="142" class="label">Cell (Voltage V)</text>
+
+  <!-- Lamp (Right) -->
+  <g transform="translate(580, 340)">
+    <circle cx="0" cy="0" r="26" fill="#fef08a" stroke="#334155" stroke-width="4"/>
+    <path d="M -15 -15 L 15 15 M -15 15 L 15 -15" stroke="#334155" stroke-width="3"/>
+  </g>
+  <text x="655" y="335" class="label" text-anchor="start">Lamp</text>
+  <text x="655" y="355" class="sublabel" text-anchor="start">Shares voltage</text>
+
+  <!-- Resistor (Bottom) -->
+  <g transform="translate(400, 510)">
+    <rect x="-40" y="-15" width="80" height="30" fill="#ffffff" stroke="#334155" stroke-width="4" rx="4"/>
+    <path d="M -30 0 L -20 -10 L -10 10 L 0 -10 L 10 10 L 20 -10 L 30 0" fill="none" stroke="#ef4444" stroke-width="3"/>
+  </g>
+  <text x="400" y="565" class="label">Resistor</text>
+  <text x="400" y="583" class="sublabel">Shares voltage</text>
+
+  <!-- ANIMATED CURRENT (Moving Electrons) -->
+  <!-- Path definition matching the inner loop: Top(400,170) -> Right(580,170) -> Right(580,510) -> Bottom(400,510) -> Left(220,510) -> Left(220,170) -> Top(400,170) -->
+  <path id="circuit-path" d="M 400 170 
+             L 580 170 
+             L 580 510 
+             L 220 510 
+             L 220 170 
+             Z" fill="none" />
+
+  <!-- Electron Dots with SMIL Animation -->
+  <circle r="6" class="electron">
+    <animateMotion dur="4s" repeatCount="indefinite">
+      <mpath href="#circuit-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle r="6" class="electron">
+    <animateMotion dur="4s" begin="1.33s" repeatCount="indefinite">
+      <mpath href="#circuit-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle r="6" class="electron">
+    <animateMotion dur="4s" begin="2.66s" repeatCount="indefinite">
+      <mpath href="#circuit-path"/>
+    </animateMotion>
+  </circle>
+
+  <!-- Label for current indicator (safely inside left margin >= 20) -->
+  <text x="210" y="335" class="label" text-anchor="end">Current (I)</text>
+  <text x="210" y="355" class="sublabel" text-anchor="end">Same everywhere</text>
+
+</svg>
+======================================================================
+FILE: test_output_5.svg
+======================================================================
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <title>States of Matter - GCSE Chemistry</title>
+  <style>
+    .bg { fill: #f8fafc; }
+    .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 3; rx: 12; }
+    .label { font-family: sans-serif; font-size: 20px; font-weight: bold; fill: #1e293b; text-anchor: middle; }
+    .sublabel { font-family: sans-serif; font-size: 14px; fill: #64748b; text-anchor: middle; }
+    .particle { fill: #3b82f6; stroke: #1d4ed8; stroke-width: 2; }
+    .liquid-particle { fill: #10b981; stroke: #047857; stroke-width: 2; }
+    .gas-particle { fill: #ef4444; stroke: #b91c1c; stroke-width: 2; }
+    .arrow { stroke: #94a3b8; stroke-width: 3; fill: none; stroke-dasharray: 6 6; }
+    
+    /* Solid particle vibration */
+    @keyframes vibrate {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 1px); }
+      50% { transform: translate(1px, -2px); }
+      75% { transform: translate(2px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+    .v1 { animation: vibrate 0.3s infinite ease-in-out; }
+    .v2 { animation: vibrate 0.25s infinite ease-in-out; }
+    .v3 { animation: vibrate 0.35s infinite ease-in-out; }
+
+    /* Gas fast movement */
+    @keyframes bounce1 {
+      0% { transform: translate(0, 0); }
+      33% { transform: translate(-30px, 40px); }
+      66% { transform: translate(25px, -30px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes bounce2 {
+      0% { transform: translate(0, 0); }
+      33% { transform: translate(35px, -25px); }
+      66% { transform: translate(-20px, 35px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes bounce3 {
+      0% { transform: translate(0, 0); }
+      33% { transform: translate(-40px, -20px); }
+      66% { transform: translate(30px, 30px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes bounce4 {
+      0% { transform: translate(0, 0); }
+      33% { transform: translate(20px, 45px); }
+      66% { transform: translate(-35px, -15px); }
+      100% { transform: translate(0, 0); }
+    }
+    .g1 { animation: bounce1 1.2s infinite ease-in-out; }
+    .g2 { animation: bounce2 1.0s infinite ease-in-out; }
+    .g3 { animation: bounce3 1.4s infinite ease-in-out; }
+    .g4 { animation: bounce4 1.1s infinite ease-in-out; }
+
+    /* Liquid flow movement */
+    @keyframes flow1 {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(12px, -8px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes flow2 {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(-10px, 10px); }
+      100% { transform: translate(0, 0); }
+    }
+    .l1 { animation: flow1 2s infinite ease-in-out; }
+    .l2 { animation: flow2 2.2s infinite ease-in-out; }
+  </style>
+
+  <!-- Background -->
+  <rect width="800" height="600" class="bg" />
+
+  <!-- Title -->
+  <text x="400" y="45" style="font-family: sans-serif; font-size: 26px; font-weight: bold; fill: #0f172a; text-anchor: middle;">States of Matter</text>
+  <text x="400" y="70" style="font-family: sans-serif; font-size: 16px; fill: #475569; text-anchor: middle;">How particles are arranged and move in different states</text>
+
+  <!-- ==================== SOLID BOX ==================== -->
+  <g transform="translate(40, 100)">
+    <rect width="210" height="380" class="box" />
+    <text x="105" y="35" class="label">Solid</text>
+    <text x="105" y="55" class="sublabel">Close, regular, vibrating</text>
+    
+    <!-- Solid Particles Grid (vibrating) -->
+    <g transform="translate(30, 90)">
+      <!-- Row 1 -->
+      <circle cx="20" cy="20" r="14" class="particle v1" />
+      <circle cx="60" cy="20" r="14" class="particle v2" />
+      <circle cx="100" cy="20" r="14" class="particle v3" />
+      <circle cx="140" cy="20" r="14" class="particle v1" />
+      <!-- Row 2 -->
+      <circle cx="20" cy="65" r="14" class="particle v3" />
+      <circle cx="60" cy="65" r="14" class="particle v1" />
+      <circle cx="100" cy="65" r="14" class="particle v2" />
+      <circle cx="140" cy="65" r="14" class="particle v3" />
+      <!-- Row 3 -->
+      <circle cx="20" cy="110" r="14" class="particle v2" />
+      <circle cx="60" cy="110" r="14" class="particle v3" />
+      <circle cx="100" cy="110" r="14" class="particle v1" />
+      <circle cx="140" cy="110" r="14" class="particle v2" />
+      <!-- Row 4 -->
+      <circle cx="20" cy="155" r="14" class="particle v1" />
+      <circle cx="60" cy="155" r="14" class="particle v2" />
+      <circle cx="100" cy="155" r="14" class="particle v3" />
+      <circle cx="140" cy="155" r="14" class="particle v1" />
+      <!-- Row 5 -->
+      <circle cx="20" cy="200" r="14" class="particle v3" />
+      <circle cx="60" cy="200" r="14" class="particle v1" />
+      <circle cx="100" cy="200" r="14" class="particle v2" />
+      <circle cx="140" cy="200" r="14" class="particle v3" />
+    </g>
+
+    <text x="105" y="340" class="sublabel" style="font-size: 13px;">• Strong forces</text>
+    <text x="105" y="360" class="sublabel" style="font-size: 13px;">• Fixed shape &amp; volume</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path d="M 265 290 L 295 290" class="arrow" />
+  <polygon points="295,285 305,290 295,295" fill="#94a3b8" />
+  <text x="285" y="270" style="font-family: sans-serif; font-size: 12px; fill: #64748b; text-anchor: middle;">Heat</text>
+
+  <!-- ==================== LIQUID BOX ==================== -->
+  <g transform="translate(295, 100)">
+    <rect width="210" height="380" class="box" />
+    <text x="105" y="35" class="label">Liquid</text>
+    <text x="105" y="55" class="sublabel">Close, random, flow</text>
+    
+    <!-- Liquid Particles (irregular, flowing past each other) -->
+    <g transform="translate(25, 90)">
+      <circle cx="30" cy="30" r="14" class="liquid-particle l1" />
+      <circle cx="70" cy="25" r="14" class="liquid-particle l2" />
+      <circle cx="115" cy="35" r="14" class="liquid-particle l1" />
+      <circle cx="150" cy="25" r="14" class="liquid-particle l2" />
+
+      <circle cx="20" cy="75" r="14" class="liquid-particle l2" />
+      <circle cx="60" cy="70" r="14" class="liquid-particle l1" />
+      <circle cx="100" cy="80" r="14" class="liquid-particle l2" />
+      <circle cx="145" cy="70" r="14" class="liquid-particle l1" />
+
+      <circle cx="35" cy="125" r="14" class="liquid-particle l1" />
+      <circle cx="80" cy="120" r="14" class="liquid-particle l2" />
+      <circle cx="120" cy="125" r="14" class="liquid-particle l1" />
+      <circle cx="155" cy="130" r="14" class="liquid-particle l2" />
+
+      <circle cx="25" cy="175" r="14" class="liquid-particle l2" />
+      <circle cx="65" cy="170" r="14" class="liquid-particle l1" />
+      <circle cx="105" cy="180" r="14" class="liquid-particle l2" />
+      <circle cx="140" cy="175" r="14" class="liquid-particle l1" />
+
+      <circle cx="45" cy="215" r="14" class="liquid-particle l1" />
+      <circle cx="90" cy="220" r="14" class="liquid-particle l2" />
+      <circle cx="130" cy="215" r="14" class="liquid-particle l1" />
+    </g>
+
+    <text x="105" y="340" class="sublabel" style="font-size: 13px;">• Weaker forces</text>
+    <text x="105" y="360" class="sublabel" style="font-size: 13px;">• Takes shape of container</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path d="M 520 290 L 550 290" class="arrow" />
+  <polygon points="550,285 560,290 550,295" fill="#94a3b8" />
+  <text x="540" y="270" style="font-family: sans-serif; font-size: 12px; fill: #64748b; text-anchor: middle;">Heat</text>
+
+  <!-- ==================== GAS BOX ==================== -->
+  <g transform="translate(550, 100)">
+    <rect width="210" height="380" class="box" />
+    <text x="105" y="35" class="label">Gas</text>
+    <text x="105" y="55" class="sublabel">Far apart, fast, random</text>
+    
+    <!-- Gas Particles (widely spaced, fast moving) -->
+    <g transform="translate(30, 90)">
+      <circle cx="30" cy="40" r="14" class="gas-particle g1" />
+      <circle cx="140" cy="30" r="14" class="gas-particle g2" />
+      <circle cx="90" cy="90" r="14" class="gas-particle g3" />
+      <circle cx="30" cy="150" r="14" class="gas-particle g4" />
+      <circle cx="150" cy="160" r="14" class="gas-particle g1" />
+      <circle cx="90" cy="210" r="14" class="gas-particle g2" />
+    </g>
+
+    <text x="105" y="340" class="sublabel" style="font-size: 13px;">• Very weak forces</text>
+    <text x="105" y="360" class="sublabel" style="font-size: 13px;">• Completely fills space</text>
+  </g>
+
+  <!-- Footer note -->
+  <text x="400" y="530" style="font-family: sans-serif; font-size: 14px; fill: #64748b; text-anchor: middle;">Note: Particles themselves do not expand; the spaces between them increase when heated.</text>
+</svg>
+======================================================================
+FILE: app\concepts.py
+======================================================================
+CONCEPTS = {
+    "1": {
+        "name": "Pythagoras' theorem",
+        "subject": "Maths",
+        "description": (
+            "In a right-angled triangle, the longest side is called the hypotenuse. "
+            "The square of the hypotenuse is equal to the sum of the squares of the "
+            "other two sides: a² + b² = c²."
+        ),
+        "hint": "A right-angled triangle with sides a, b, c labelled, a square drawn on each side, and the equation a² + b² = c².",
+    },
+    "2": {
+        "name": "Parts of a circle",
+        "subject": "Maths",
+        "description": (
+            "A circle has a centre. The radius is the distance from the centre to the "
+            "edge. The diameter goes across the circle through the centre and is twice "
+            "the radius. The circumference is the distance around the circle."
+        ),
+        "hint": "One circle with centre, radius, diameter and circumference clearly labelled.",
+    },
+    "3": {
+        "name": "Series circuit",
+        "subject": "Physics",
+        "description": (
+            "In a series circuit there is only one loop. The current is the same "
+            "everywhere in the loop. The voltage of the cell is shared between the "
+            "components."
+        ),
+        "hint": "A single closed loop with a cell, a lamp and a resistor, and moving dots showing current direction.",
+    },
+    "4": {
+        "name": "Photosynthesis",
+        "subject": "Biology",
+        "description": (
+            "Plants take in carbon dioxide and water. They use light energy, absorbed "
+            "by chlorophyll, to make glucose and oxygen."
+        ),
+        "hint": "A plant or leaf with sunlight, CO₂ and water going in, and glucose and O₂ coming out.",
+    },
+    "5": {
+        "name": "States of matter",
+        "subject": "Chemistry",
+        "description": (
+            "In a solid the particles are close together and vibrate in place. In a "
+            "liquid they are close but move past each other. In a gas they are far "
+            "apart and move fast."
+        ),
+        "hint": "Three side-by-side boxes (solid, liquid, gas) with particles spaced and moving differently in each.",
+    },
+}
+======================================================================
+FILE: app\config.py
+======================================================================
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Project root folder (the folder that contains "app/")
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Reads the .env file and loads its values as environment variables
+load_dotenv(BASE_DIR / ".env")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Confirm this exact ID in AI Studio. If it fails, see the troubleshooting table below.
+MODEL_NAME = "gemini-3.5-flash-lite"
+
+# The drawing area we ask the model to use
+VIEWBOX_WIDTH = 800
+VIEWBOX_HEIGHT = 600
+
+# Upper limit on the model's reply. Thinking tokens count toward this too,
+# so keep it generous or the SVG may be cut off halfway.
+MAX_OUTPUT_TOKENS = 16000
+
+
+# --- SVG validation settings ---
+MIN_LABELS = 3            # minimum number of <text> labels
+BOUNDS_TOLERANCE = 2.0    # allowed overshoot past the viewBox, in SVG units
+CHAR_WIDTH_FACTOR = 0.55  # rough text width = font-size * this * number of characters
+DEFAULT_FONT_SIZE = 16.0  # used when a <text> has no font-size
+
+
+
+# --- Standard paid-tier pricing: USD per 1 million tokens ---
+# Source: https://ai.google.dev/gemini-api/docs/pricing
+# Verified on: 2026-11-24
+PRICES = {
+    "gemini-3.5-flash-lite": {"input": 0.30, "output": 2.50},
+    # Gemini 3.5 Flash is deprecated and routed to Gemini 3.6 Flash.
+    "gemini-3.5-flash": {"input": 0.75, "output": 3.75},
+    "gemini-3.6-flash": {"input": 0.75, "output": 3.75},
+}
+DEFAULT_PRICE = PRICES["gemini-3.5-flash-lite"]
+
+# --- Retry settings ---
+MAX_API_RETRIES = 3          # extra tries after a 429/503 (so up to 4 calls in total)
+MAX_VALIDATION_RETRIES = 1   # the brief says: retry once
+
+# "batch" is for scripts that can afford to wait. "live" is for the Generate button,
+# where a person is staring at a spinner, so we wait less and give up sooner.
+RETRY_PROFILES = {
+    "batch": {"delays": [15, 30, 60], "max_wait": 70},
+    "live": {"delays": [3, 6, 12], "max_wait": 20},
+}
+
+
+# --- Files and batch generation ---
+RESULTS_FILE = BASE_DIR / "data" / "results.json"
+DELAY_BETWEEN_CONCEPTS = 8   # seconds to pause between concepts (free-tier limits are low)
+
+
+# --- Live Generate button protection ---
+GENERATE_COOLDOWN_SECONDS = 10   # minimum gap between live generations (protects the free quota)
+======================================================================
+FILE: app\main.py
+======================================================================
+import json
+import logging
+import math
+import threading
+import time
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+from app import config
+from app.concepts import CONCEPTS
+from app.services.orchestrator import GenerationError, generate_diagram
+
+log = logging.getLogger("diagram")
+
+app = FastAPI(title="Science Diagram Maker")
+
+STATIC_DIR = config.BASE_DIR / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# Only one live generation at a time, with a pause between them
+_generate_lock = threading.Lock()
+_last_finished = None  # time.monotonic() value when the last generation ended
+
+
+class GenerateRequest(BaseModel):
+    concept_id: str
+
+
+def error_response(status, message, headers=None):
+    """Every error is JSON like {"error": "..."} so the web page can show it."""
+    return JSONResponse(status_code=status, content={"error": message}, headers=headers)
+
+
+@app.get("/")
+def home():
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+
+@app.get("/api/results")
+def get_results():
+    """The saved results. Reads a file only, so it never calls Gemini."""
+    try:
+        text = config.RESULTS_FILE.read_text(encoding="utf-8")
+        return {"results": json.loads(text)}
+    except FileNotFoundError:
+        return {"results": []}
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="results.json is not valid JSON")
+
+
+@app.post("/api/generate")
+def generate(request: GenerateRequest):
+    """Run the whole pipeline live for one concept."""
+    global _last_finished
+
+    if request.concept_id not in CONCEPTS:
+        return error_response(404, f"Unknown concept id: {request.concept_id!r}")
+
+    # Don't wait for the lock. If someone else is generating, say so immediately.
+    if not _generate_lock.acquire(blocking=False):
+        return error_response(
+            429, "Another diagram is being generated right now. Please wait for it to finish."
+        )
+    try:
+        if _last_finished is not None:
+            wait = config.GENERATE_COOLDOWN_SECONDS - (time.monotonic() - _last_finished)
+            if wait > 0:
+                seconds = math.ceil(wait)
+                return error_response(
+                    429,
+                    f"Please wait {seconds} more second(s) before generating again. "
+                    "This protects the free API quota.",
+                    headers={"Retry-After": str(seconds)},
+                )
+        try:
+            return generate_diagram(request.concept_id, profile="live")
+        except GenerationError as error:
+            status = error.status_code if error.status_code in (429, 503) else 502
+            return error_response(status, error.message)
+        except Exception:
+            log.exception("Unexpected error while generating")
+            return error_response(
+                500, "Something went wrong on the server while generating. Please try again."
+            )
+        finally:
+            _last_finished = time.monotonic()
+    finally:
+        _generate_lock.release()
+======================================================================
+FILE: app\__init__.py
+======================================================================
+
+======================================================================
+FILE: app\services\cost_tracker.py
+======================================================================
+from app import config
+
+
+def estimate_cost(input_tokens, output_tokens, thought_tokens=0, model=None):
+    """Estimated paid-tier cost in USD for the selected model.
+
+    Thinking tokens are billed like output tokens, so we add them to the output.
+    The free tier actually charges $0; this is the paid-tier equivalent.
+    """
+    price = config.PRICES.get(model or config.MODEL_NAME, config.DEFAULT_PRICE)
+    billed_output = output_tokens + thought_tokens
+    cost = (
+        (input_tokens / 1_000_000) * price["input"]
+        + (billed_output / 1_000_000) * price["output"]
+    )
+    return round(cost, 6)
+======================================================================
+FILE: app\services\gemini_client.py
+======================================================================
+from google import genai
+from google.genai import types
+
+from app import config
+
+SYSTEM_PROMPT = f"""You are an expert science illustrator making animated diagrams
+for UK GCSE students.
+
+Return exactly ONE complete SVG element and nothing else: no markdown, no code
+fences, no explanation.
+
+Technical requirements:
+1. Start with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {config.VIEWBOX_WIDTH} {config.VIEWBOX_HEIGHT}">.
+2. Keep every shape and every piece of text fully inside that viewBox, with a margin of at least 20 units.
+3. Include a <title> element with a clear diagram title.
+4. Include at least 3 <text> labels. Use font-size 16 or larger and font-family sans-serif.
+5. Include animation using SMIL (<animate>, <animateTransform>, <animateMotion>) or CSS @keyframes that is actually used. The animation should help explain the concept.
+6. Use a clean, simple style with a light background and good colour contrast.
+7. Use no JavaScript, no external images, no external fonts and no external links.
+8. Keep the SVG under 50 KB.
+"""
+
+
+def get_client():
+    """Create the Gemini client, with a friendly error if the key is missing."""
+    if not config.GEMINI_API_KEY:
+        raise RuntimeError(
+            "GEMINI_API_KEY is missing. Put it in the .env file in the project root."
+        )
+    return genai.Client(api_key=config.GEMINI_API_KEY)
+
+
+def build_prompt(concept):
+    """Turn one concept dictionary into the user message."""
+    return (
+        f"Concept: {concept['name']} ({concept['subject']})\n\n"
+        f"Explanation: {concept['description']}\n\n"
+        f"The diagram must show: {concept['hint']}\n\n"
+        "Return only the SVG."
+    )
+
+
+
+def build_correction_prompt(concept, previous_svg, failures):
+    """The message for the validation retry: what went wrong, plus the previous answer."""
+    problems = "\n".join(f"- {failure}" for failure in failures)
+    return (
+        build_prompt(concept)
+        + "\n\nYour previous answer failed these automatic checks:\n"
+        + problems
+        + "\n\nHere is your previous answer:\n"
+        + previous_svg[:30000]
+        + "\n\nFix every problem listed above and return the complete corrected SVG. "
+        "Return only the SVG, with no explanation."
+    )
+
+
+
+def extract_svg(text):
+    """Cut out everything from '<svg' to the last '</svg>'.
+
+    This removes markdown fences and any chatter the model added around the SVG.
+    """
+    start = text.find("<svg")
+    end = text.rfind("</svg>")
+    if start == -1 or end == -1 or end < start:
+        raise ValueError("No complete <svg>...</svg> found in the model response")
+    return text[start : end + len("</svg>")]
+
+
+def call_gemini(prompt):
+    """Send one prompt to Gemini. Return the raw text and the token usage."""
+    client = get_client()
+    response = client.models.generate_content(
+        model=config.MODEL_NAME,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            max_output_tokens=config.MAX_OUTPUT_TOKENS,
+        ),
+    )
+
+    usage = response.usage_metadata
+    finish_reason = None
+    if response.candidates:
+        finish_reason = str(response.candidates[0].finish_reason)
+
+    return {
+        "text": response.text or "",
+        "model": config.MODEL_NAME,
+        # "or 0" protects us if a field comes back empty
+        "input_tokens": (usage.prompt_token_count or 0) if usage else 0,
+        "output_tokens": (usage.candidates_token_count or 0) if usage else 0,
+        "thought_tokens": (usage.thoughts_token_count or 0) if usage else 0,
+        "finish_reason": finish_reason,
+    }
+
+
+def generate_svg(concept):
+    """Ask Gemini for an SVG for one concept."""
+    reply = call_gemini(build_prompt(concept))
+    reply["svg"] = extract_svg(reply["text"])
+    return reply
+======================================================================
+FILE: app\services\orchestrator.py
+======================================================================
+"""Coordinates one diagram: prompt -> Gemini -> checks -> (one retry) -> result."""
+import logging
+import random
+import re
+import time
+from datetime import datetime, timezone
+
+from app import config
+from app.concepts import CONCEPTS
+from app.services import gemini_client
+from app.services.cost_tracker import estimate_cost
+from app.services.svg_validator import all_passed, failure_messages, validate_svg
+
+log = logging.getLogger("diagram")
+
+RETRYABLE_CODES = {429, 503}
+
+
+class GenerationError(Exception):
+    """Raised when Gemini could not give us anything usable.
+
+    .message is safe to show to a user on the web page.
+    """
+
+    def __init__(self, message, status_code=None, api_retries=0):
+        super().__init__(message)
+        self.message = message
+        self.status_code = status_code
+        self.api_retries = api_retries
+
+
+
+# ------------------------------------------------------------ error helpers
+def get_status_code(error):
+    """Pull an HTTP-style code (429, 503...) out of an exception, or None."""
+    for name in ("code", "status_code"):
+        value = getattr(error, name, None)
+        if isinstance(value, int):
+            return value
+    return None
+
+
+def suggested_delay(error):
+    """If Gemini says how long to wait ('retryDelay': '34s'), return seconds, else 0."""
+    match = re.search(
+        r"(?:retry\w*delay\W+|retry in\s+)(\d+(?:\.\d+)?)\s*s", str(error), re.I
+    )
+    return float(match.group(1)) if match else 0.0
+
+
+def friendly_message(code, error):
+    if code in (400, 401, 403) and "api key" in str(error).lower():
+        return "Gemini rejected the API key. Check GEMINI_API_KEY."
+    messages = {
+        # ... the rest stays exactly as it was
+        429: "Gemini's rate limit was reached. Free-tier limits are low, so please wait a minute and try again.",
+        503: "Gemini is overloaded right now. Please try again shortly.",
+        401: "Gemini rejected the API key. Check GEMINI_API_KEY.",
+        403: "Gemini rejected the API key or this model is not allowed for it. Check GEMINI_API_KEY.",
+        404: f"Model '{config.MODEL_NAME}' was not found. Check MODEL_NAME in config.py.",
+        400: "Gemini rejected the request as invalid.",
+    }
+    if code in messages:
+        return messages[code]
+    return f"Gemini request failed ({type(error).__name__}): {str(error)[:200]}"
+
+
+# --------------------------------------------------------------- API retry
+def call_with_api_retry(call_model, prompt, profile, sleep):
+    """Call the model. On 429/503 wait and retry, up to MAX_API_RETRIES times.
+
+    Returns (reply, number_of_retries_used). Any other error stops immediately.
+    """
+    settings = config.RETRY_PROFILES[profile]
+    delays = settings["delays"]
+    retries = 0
+
+    while True:
+        try:
+            return call_model(prompt), retries
+        except Exception as error:
+            code = get_status_code(error)
+            retryable = code in RETRYABLE_CODES
+            if not retryable or retries >= config.MAX_API_RETRIES:
+                raise GenerationError(
+                    friendly_message(code, error), code, api_retries=retries
+                ) from error
+
+            base = delays[min(retries, len(delays) - 1)]
+            wait = min(max(base, suggested_delay(error)), settings["max_wait"])
+            wait += random.uniform(0, 1)  # small random extra so retries don't all line up
+            log.warning(
+                "Gemini error %s (%s). Waiting %.1fs, then API retry %d of %d",
+                code, str(error)[:150], wait, retries + 1, config.MAX_API_RETRIES,
+            )
+            sleep(wait)
+            retries += 1
+
+
+# ------------------------------------------------------------- one attempt
+def _run_attempt(call_model, prompt, profile, sleep, kind):
+    """One model call plus the five checks. Returns a dictionary describing it."""
+    reply, api_retries = call_with_api_retry(call_model, prompt, profile, sleep)
+
+    text = reply["text"]
+    problem = None
+    try:
+        svg = gemini_client.extract_svg(text)
+        svg_ok = True
+    except ValueError as error:
+        svg, svg_ok = text, False
+        problem = str(error)
+        if "MAX_TOKENS" in str(reply.get("finish_reason")):
+            problem += " (the reply was cut off: MAX_TOKENS)"
+
+    checks = validate_svg(svg)
+    if problem:
+        checks["valid_xml"] = {"passed": False, "reason": problem}
+
+    return {
+        "kind": kind,
+        "svg": svg,            # the SVG, or the raw reply text if no SVG was found
+        "svg_ok": svg_ok,
+        "checks": checks,
+        "error": None,
+        "api_retries": api_retries,
+        "model": reply.get("model"),
+        "input_tokens": reply.get("input_tokens", 0),
+        "output_tokens": reply.get("output_tokens", 0),
+        "thought_tokens": reply.get("thought_tokens", 0),
+        "finish_reason": reply.get("finish_reason"),
+    }
+
+
+def _failed_attempt(kind, error):
+    """Record an attempt that died from an API error (no SVG, no tokens)."""
+    return {
+        "kind": kind, "svg": "", "svg_ok": False, "checks": None,
+        "error": error.message, "api_retries": error.api_retries,
+        "model": None, "input_tokens": 0, "output_tokens": 0,
+        "thought_tokens": 0, "finish_reason": None,
+    }
+
+
+# ------------------------------------------------------------- main entry
+def generate_diagram(concept_id, call_model=None, sleep=time.sleep, profile="batch"):
+    """Generate, check and (if needed) correct one diagram. Returns a result dict.
+
+    call_model: function(prompt) -> dict. Defaults to the real Gemini call.
+    sleep:      function(seconds). Tests pass a fake so they don't actually wait.
+    profile:    "batch" (patient) or "live" (for the web page).
+    Raises GenerationError if the FIRST call fails completely.
+    """
+    if concept_id not in CONCEPTS:
+        raise ValueError(f"Unknown concept id: {concept_id!r}")
+    call_model = call_model or gemini_client.call_gemini
+
+    concept = CONCEPTS[concept_id]
+    prompt = gemini_client.build_prompt(concept)
+    log.info("[%s] Generating: %s", concept_id, concept["name"])
+
+    attempts = [_run_attempt(call_model, prompt, profile, sleep, "initial")]
+    validation_retries = 0
+
+    # The validation retry: only if checks failed, and only MAX_VALIDATION_RETRIES times
+    while (
+        not all_passed(attempts[-1]["checks"])
+        and validation_retries < config.MAX_VALIDATION_RETRIES
+    ):
+        validation_retries += 1
+        failures = failure_messages(attempts[-1]["checks"])
+        log.info("[%s] Checks failed: %s", concept_id, " | ".join(failures))
+        correction = gemini_client.build_correction_prompt(
+            concept, attempts[-1]["svg"], failures
+        )
+        try:
+            attempts.append(
+                _run_attempt(call_model, correction, profile, sleep, "correction")
+            )
+        except GenerationError as error:
+            # Keep attempt 1 instead of losing it. We save what we have, honestly.
+            log.warning("[%s] Correction attempt failed: %s", concept_id, error.message)
+            attempts.append(_failed_attempt("correction", error))
+            break
+
+    # Choose the final attempt: the last one that produced checks. If that one had no
+    # SVG at all but an earlier one did, keep the earlier SVG.
+    scored = [a for a in attempts if a["checks"] is not None]
+    final = scored[-1]
+    if not final["svg_ok"]:
+        for earlier in reversed(scored):
+            if earlier["svg_ok"]:
+                final = earlier
+                break
+
+    # Totals across ALL attempts, including the failed first one
+    total_input = sum(a["input_tokens"] for a in attempts)
+    total_output = sum(a["output_tokens"] for a in attempts)
+    total_thoughts = sum(a["thought_tokens"] for a in attempts)
+    api_retries = sum(a["api_retries"] for a in attempts)
+    passed = all_passed(final["checks"])
+    used_model = final["model"] or scored[0]["model"] or config.MODEL_NAME
+    price = config.PRICES.get(used_model, config.DEFAULT_PRICE)
+
+    result = {
+        "concept_id": concept_id,
+        "concept_name": concept["name"],
+        "subject": concept["subject"],
+        "model": used_model,
+        "svg": final["svg"] if final["svg_ok"] else "",
+        "status": "passed" if passed else "failed",
+        "checks": final["checks"],
+        "tokens": {
+            "input": total_input,
+            "output": total_output,
+            "thoughts": total_thoughts,
+            "billed_output": total_output + total_thoughts,
+        },
+        "cost_usd": estimate_cost(total_input, total_output, total_thoughts, used_model),
+        "pricing": {
+            "input_per_million": price["input"],
+            "output_per_million": price["output"],
+            "note": "Estimated paid-tier equivalent. The free tier charges $0.",
+        },
+        "retries": {
+            "api": api_retries,
+            "validation": validation_retries,
+            "total": api_retries + validation_retries,
+        },
+        "attempts": [
+            {
+                "attempt": number,
+                "kind": a["kind"],
+                "api_retries": a["api_retries"],
+                "input_tokens": a["input_tokens"],
+                "output_tokens": a["output_tokens"],
+                "thought_tokens": a["thought_tokens"],
+                "finish_reason": a["finish_reason"],
+                "error": a["error"],
+                "failures": failure_messages(a["checks"]) if a["checks"] else [],
+            }
+            for number, a in enumerate(attempts, start=1)
+        ],
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+
+    log.info(
+        "[%s] %s | tokens in=%d out=%d thoughts=%d | cost $%.6f | retries api=%d validation=%d",
+        concept_id, result["status"].upper(), total_input, total_output,
+        total_thoughts, result["cost_usd"], api_retries, validation_retries,
+    )
+    return result
+======================================================================
+FILE: app\services\svg_validator.py
+======================================================================
+"""Checks for AI-generated SVGs.
+
+Every check returns (passed: bool, reason: str).
+validate_svg() runs all five and returns a dictionary the web page can show.
+"""
+import re
+import xml.etree.ElementTree as ET
+
+from app import config
+
+# A number like 12, -3.5, .5 or 1e3 (no capture groups, so findall returns whole numbers)
+NUMBER_PATTERN = r"-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?"
+_NUMBER = re.compile(NUMBER_PATTERN)
+_TRANSLATE = re.compile(
+    rf"^\s*translate\(\s*({NUMBER_PATTERN})\s*(?:[,\s]\s*({NUMBER_PATTERN}))?\s*\)\s*$"
+)
+
+ANIMATION_TAGS = {"animate", "animatetransform", "animatemotion", "set"}
+# Children with these tags move their parent, so its static position means nothing
+MOVING_TAGS = {"animatemotion", "animatetransform"}
+
+# Parts of an SVG that are not drawn directly, so we don't measure them
+SKIP_TAGS = {"defs", "clippath", "mask", "pattern", "symbol", "marker",
+             "style", "title", "desc", "metadata"}
+
+# Shapes we can't measure with simple maths. We count them but don't fail them.
+UNCHECKED_TAGS = {"path", "image", "use"}
+
+FORBIDDEN_TAGS = {"script", "foreignobject", "iframe", "embed", "object"}
+
+
+# ----------------------------------------------------------------- helpers
+def _local(tag):
+    """'{http://www.w3.org/2000/svg}Circle' -> 'circle'"""
+    return tag.split("}")[-1].lower()
+
+
+def _num(elem, name, default=0.0):
+    """Read a numeric attribute.
+
+    Missing attribute -> default. Percentages or junk -> None ("can't measure").
+    """
+    raw = elem.get(name)
+    if raw is None:
+        return default
+    raw = raw.strip()
+    if "%" in raw:
+        return None
+    match = _NUMBER.match(raw)
+    return float(match.group()) if match else None
+
+
+def _first_number(raw, default=0.0):
+    """First number in a string like '10 20 30' (text x can be a list)."""
+    match = _NUMBER.search(raw or "")
+    return float(match.group()) if match else default
+
+
+def _text_content(elem):
+    """All text inside an element, with whitespace tidied."""
+    return " ".join("".join(elem.itertext()).split())
+
+
+def parse_svg(svg_string):
+    """Parse the SVG or raise an error. Used by check 1 and by validate_svg()."""
+    lowered = svg_string.lower()
+    # DOCTYPE/ENTITY tricks can make XML parsers misbehave. SVGs never need them.
+    if "<!doctype" in lowered or "<!entity" in lowered:
+        raise ValueError("SVG contains a DOCTYPE or ENTITY declaration, which is not allowed")
+    root = ET.fromstring(svg_string)
+    if _local(root.tag) != "svg":
+        raise ValueError(f"Root element is <{_local(root.tag)}>, not <svg>")
+    return root
+
+
+# ----------------------------------------------------- check 1: valid XML
+def check_valid_xml(svg_string):
+    try:
+        parse_svg(svg_string)
+    except ET.ParseError as error:
+        return False, f"Invalid XML: {error}"
+    except ValueError as error:
+        return False, str(error)
+    return True, "Valid XML with an <svg> root element"
+
+
+# --------------------------------------------------- check 2: inside viewBox
+def _get_viewbox(root):
+    """Return [min_x, min_y, width, height] or None if missing/invalid."""
+    raw = root.get("viewBox")
+    if not raw:
+        return None
+    try:
+        numbers = [float(p) for p in re.split(r"[\s,]+", raw.strip())]
+    except ValueError:
+        return None
+    if len(numbers) != 4 or numbers[2] <= 0 or numbers[3] <= 0:
+        return None
+    return numbers
+
+
+def _css_rules(root):
+    """Very small CSS reader: {'.title': 'font-size:24px;text-anchor:middle', 'text': ...}."""
+    rules = {}
+    for selectors, body in re.findall(r"([^{}@]+)\{([^{}]*)\}", _collect_css(root)):
+        for selector in selectors.split(","):
+            rules[selector.strip()] = rules.get(selector.strip(), "") + ";" + body
+    return rules
+
+
+def _effective_style(elem, rules):
+    """Rules for 'text' and the element's classes, then its inline style (last wins)."""
+    parts = [rules.get("text", "")]
+    for cls in (elem.get("class") or "").split():
+        parts.append(rules.get("." + cls, ""))
+        parts.append(rules.get("text." + cls, ""))
+    parts.append(elem.get("style", ""))
+    return ";".join(parts)
+
+
+def _text_box(elem, rules=None):
+    """Estimate the box a <text> covers. Returns None if the text is empty."""
+    content = _text_content(elem)
+    if not content:
+        return None
+    style = _effective_style(elem, rules or {})
+
+    # CSS (classes / inline style) beats the plain attribute, so look there first
+    matches = re.findall(r"font-size\s*:\s*([\d.]+)", style)
+    if matches:
+        size = float(matches[-1])
+    else:
+        size = _num(elem, "font-size", None) or config.DEFAULT_FONT_SIZE
+
+    matches = re.findall(r"text-anchor\s*:\s*(\w+)", style)
+    anchor = matches[-1] if matches else elem.get("text-anchor", "start")
+
+    x = _first_number(elem.get("x"))
+    y = _first_number(elem.get("y"))
+    width = config.CHAR_WIDTH_FACTOR * size * len(content)
+
+    if anchor == "middle":
+        x0 = x - width / 2
+    elif anchor == "end":
+        x0 = x - width
+    else:
+        x0 = x
+    # Text sits ON the baseline y, so most of it is above y
+    return (x0, y - size, x0 + width, y + 0.25 * size)
+
+
+def _element_box(elem, tag, rules=None):
+    """Return (x0, y0, x1, y1), the string 'unchecked', or None if not a shape."""
+    if tag == "text":
+        return _text_box(elem, rules)
+
+    if tag == "circle":
+        cx, cy, r = _num(elem, "cx"), _num(elem, "cy"), _num(elem, "r")
+        if None in (cx, cy, r):
+            return "unchecked"
+        box = (cx - r, cy - r, cx + r, cy + r)
+    elif tag == "ellipse":
+        cx, cy = _num(elem, "cx"), _num(elem, "cy")
+        rx, ry = _num(elem, "rx"), _num(elem, "ry")
+        if None in (cx, cy, rx, ry):
+            return "unchecked"
+        box = (cx - rx, cy - ry, cx + rx, cy + ry)
+    elif tag == "rect":
+        x, y = _num(elem, "x"), _num(elem, "y")
+        w, h = _num(elem, "width"), _num(elem, "height")
+        if None in (x, y, w, h):
+            return "unchecked"
+        box = (x, y, x + w, y + h)
+    elif tag == "line":
+        x1, y1, x2, y2 = (_num(elem, n) for n in ("x1", "y1", "x2", "y2"))
+        if None in (x1, y1, x2, y2):
+            return "unchecked"
+        box = (min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2))
+    elif tag in ("polygon", "polyline"):
+        numbers = [float(n) for n in _NUMBER.findall(elem.get("points", ""))]
+        pairs = list(zip(numbers[0::2], numbers[1::2]))
+        if not pairs:
+            return "unchecked"
+        xs, ys = [p[0] for p in pairs], [p[1] for p in pairs]
+        box = (min(xs), min(ys), max(xs), max(ys))
+    elif tag in UNCHECKED_TAGS:
+        return "unchecked"
+    else:
+        return None  # a container like <g>, or something we ignore
+
+    # A stroke is drawn half inside, half outside the shape's edge
+    stroke = elem.get("stroke")
+    if stroke and stroke != "none":
+        half = (_num(elem, "stroke-width", 1.0) or 0.0) / 2
+        box = (box[0] - half, box[1] - half, box[2] + half, box[3] + half)
+    return box
+
+
+def _collect_boxes(root):
+    """Walk the whole SVG. Return (list of (tag, x0, y0, x1, y1), unchecked_count)."""
+    boxes = []
+    state = {"unchecked": 0}
+    rules = _css_rules(root)
+
+    def walk(elem, dx, dy):
+        tag = _local(elem.tag)
+        if tag in SKIP_TAGS:
+            return
+
+        # Support transform="translate(x, y)" only. Anything else -> skip this subtree.
+        transform = elem.get("transform")
+        if transform:
+            match = _TRANSLATE.match(transform)
+            if match:
+                dx += float(match.group(1))
+                dy += float(match.group(2) or 0)
+            else:
+                state["unchecked"] += 1
+                return
+
+        if any(_local(child.tag) in MOVING_TAGS for child in elem):
+            state["unchecked"] += 1   # moved by animateMotion/animateTransform: skip it
+            return
+
+        result = _element_box(elem, tag, rules)
+        if result == "unchecked":
+            state["unchecked"] += 1
+        elif result is not None:
+            x0, y0, x1, y1 = result
+            boxes.append((tag, x0 + dx, y0 + dy, x1 + dx, y1 + dy))
+
+        for child in elem:
+            walk(child, dx, dy)
+
+    for child in root:
+        walk(child, 0.0, 0.0)
+    return boxes, state["unchecked"]
+
+
+def check_viewbox_bounds(root):
+    viewbox = _get_viewbox(root)
+    if viewbox is None:
+        return False, "Missing or invalid viewBox attribute"
+
+    min_x, min_y, width, height = viewbox
+    max_x, max_y = min_x + width, min_y + height
+    tol = config.BOUNDS_TOLERANCE
+
+    boxes, unchecked = _collect_boxes(root)
+    problems = []
+    for tag, x0, y0, x1, y1 in boxes:
+        sides = []
+        if x0 < min_x - tol:
+            sides.append(f"left edge at {x0:.0f}")
+        if y0 < min_y - tol:
+            sides.append(f"top edge at {y0:.0f}")
+        if x1 > max_x + tol:
+            sides.append(f"right edge at {x1:.0f}")
+        if y1 > max_y + tol:
+            sides.append(f"bottom edge at {y1:.0f}")
+        if sides:
+            problems.append(f"<{tag}> {', '.join(sides)}")
+
+    if problems:
+        shown = "; ".join(problems[:3])
+        more = f" (+{len(problems) - 3} more)" if len(problems) > 3 else ""
+        return False, (f"{len(problems)} element(s) outside the "
+                       f"{width:.0f}x{height:.0f} viewBox: {shown}{more}")
+
+    note = f"; {unchecked} part(s) not checked (paths or complex transforms)" if unchecked else ""
+    return True, f"All {len(boxes)} measured shapes are inside the viewBox{note}"
+
+
+# ---------------------------------------------- check 3: title and labels
+def check_title_and_labels(root):
+    titles = [e for e in root.iter() if _local(e.tag) == "title" and _text_content(e)]
+    labels = [e for e in root.iter() if _local(e.tag) == "text" and _text_content(e)]
+
+    problems = []
+    if not titles:
+        problems.append("No non-empty <title> element")
+    if len(labels) < config.MIN_LABELS:
+        problems.append(f"Only {len(labels)} text label(s), need at least {config.MIN_LABELS}")
+
+    if problems:
+        return False, "; ".join(problems)
+    return True, f"Title found and {len(labels)} text labels"
+
+
+# ------------------------------------------------------ check 4: animation
+def _collect_css(root):
+    """All CSS in <style> tags and style="..." attributes, joined together."""
+    parts = []
+    for elem in root.iter():
+        if _local(elem.tag) == "style":
+            parts.append("".join(elem.itertext()))
+        if elem.get("style"):
+            parts.append(elem.get("style"))
+    return "\n".join(parts)
+
+
+def check_animation(root):
+    smil = [e for e in root.iter() if _local(e.tag) in ANIMATION_TAGS]
+    if smil:
+        return True, f"Found {len(smil)} SMIL animation element(s)"
+
+    css = _collect_css(root)
+    names = re.findall(r"@keyframes\s+([\w-]+)", css)
+    for name in names:
+        # Is there an "animation: ..." or "animation-name: ..." declaration using this name?
+        pattern = r"animation[\w-]*\s*:[^;}]*\b" + re.escape(name) + r"\b"
+        if re.search(pattern, css):
+            return True, f"CSS animation '{name}' is defined and used"
+
+    if names:
+        return False, "@keyframes defined but no animation declaration uses them"
+    return False, "No animation found (no SMIL tags and no CSS @keyframes)"
+
+
+# -------------------------------------------------- check 5: security (mine)
+def check_security(root):
+    problems = []
+
+    for elem in root.iter():
+        tag = _local(elem.tag)
+        if tag in FORBIDDEN_TAGS:
+            problems.append(f"forbidden element <{tag}>")
+
+        for attr, value in elem.attrib.items():
+            name = _local(attr)
+            if name.startswith("on"):
+                problems.append(f"event handler attribute '{name}'")
+            if name == "href" and not value.strip().startswith("#"):
+                problems.append(f"external link in href: {value[:40]}")
+            if "javascript:" in value.lower():
+                problems.append("javascript: URL in an attribute")
+            for target in re.findall(r"url\(([^)]*)\)", value, re.I):
+                if not target.strip(" '\"").startswith("#"):
+                    problems.append(f"external url() in attribute '{name}'")
+
+    css = _collect_css(root)
+    if re.search(r"@import", css, re.I):
+        problems.append("CSS @import")
+    for target in re.findall(r"url\(([^)]*)\)", css, re.I):
+        if not target.strip(" '\"").startswith("#"):
+            problems.append("external url() in CSS")
+
+    if problems:
+        unique = list(dict.fromkeys(problems))  # remove duplicates, keep order
+        return False, "Unsafe content: " + "; ".join(unique[:4])
+    return True, "No scripts, event handlers or external references"
+
+
+# ------------------------------------------------------ run everything
+def _as_dict(passed, reason):
+    return {"passed": bool(passed), "reason": reason}
+
+
+def validate_svg(svg_string):
+    """Run all five checks. Returns {check_name: {"passed": bool, "reason": str}}."""
+    checks = {}
+
+    ok, reason = check_valid_xml(svg_string)
+    checks["valid_xml"] = _as_dict(ok, reason)
+    root = parse_svg(svg_string) if ok else None
+
+    later_checks = [
+        ("viewbox_bounds", check_viewbox_bounds),
+        ("title_and_labels", check_title_and_labels),
+        ("animation", check_animation),
+        ("security", check_security),
+    ]
+    for name, function in later_checks:
+        if root is None:
+            checks[name] = _as_dict(False, "Skipped: the SVG could not be parsed")
+            continue
+        try:
+            passed, reason = function(root)
+        except Exception as error:  # a buggy check must never crash the pipeline
+            passed, reason = False, f"Check crashed: {type(error).__name__}: {error}"
+        checks[name] = _as_dict(passed, reason)
+
+    return checks
+
+
+def all_passed(checks):
+    return all(check["passed"] for check in checks.values())
+
+
+def failure_messages(checks):
+    """List of 'name: reason' strings for failed checks. Phase 3 sends these to Gemini."""
+    return [f"{name}: {c['reason']}" for name, c in checks.items() if not c["passed"]]
+======================================================================
+FILE: app\services\__init__.py
+======================================================================
+
+======================================================================
+FILE: data\results.json
+======================================================================
+[
+  {
+    "concept_id": "1",
+    "concept_name": "Pythagoras' theorem",
+    "subject": "Maths",
+    "model": "gemini-3.5-flash-lite",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\">\n  <title>Pythagoras' Theorem</title>\n  \n  <style>\n    text {\n      font-family: sans-serif;\n      font-weight: bold;\n    }\n    .label-a { fill: #2b6cb0; }\n    .label-b { fill: #c53030; }\n    .label-c { fill: #2f855a; }\n    \n    @keyframes pulse-sq {\n      0%, 100% { opacity: 0.3; }\n      50% { opacity: 0.5; }\n    }\n    .sq-anim {\n      animation: pulse-sq 3s infinite ease-in-out;\n    }\n  </style>\n\n  <!-- Background -->\n  <rect width=\"800\" height=\"600\" fill=\"#f7fafc\" />\n\n  <!-- Title & Subtitle -->\n  <text x=\"400\" y=\"45\" font-size=\"28\" text-anchor=\"middle\" fill=\"#2d3748\">Pythagoras' Theorem</text>\n  <text x=\"400\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" fill=\"#4a5568\">a² + b² = c²</text>\n\n  <!-- Definitions -->\n  <rect x=\"500\" y=\"420\" width=\"260\" height=\"130\" rx=\"10\" fill=\"#ffffff\" stroke=\"#cbd5e0\" stroke-width=\"2\"/>\n  <text x=\"520\" y=\"455\" font-size=\"16\" class=\"label-a\">a² : Area on side a</text>\n  <text x=\"520\" y=\"490\" font-size=\"16\" class=\"label-b\">b² : Area on side b</text>\n  <text x=\"520\" y=\"525\" font-size=\"16\" class=\"label-c\">c² : Area on hypotenuse c</text>\n\n  <!-- \n       Right-angled triangle coordinates:\n       Let's place vertex C (right angle) at (320, 320)\n       Side a goes UP to (320, 170) -> length 150 (3 units * 50)\n       Side b goes RIGHT to (470, 320) -> length 150 (3 units * 50)  Wait, let's make it 3-4-5 scale or similar.\n       Let's use scale: 1 unit = 40 pixels.\n       a = 3 units = 120 px\n       b = 4 units = 160 px\n       c = 5 units = 200 px\n       \n       Right angle at (260, 340)\n       Top vertex: A_top = (260, 340 - 120) = (260, 220)  [side a = 120]\n       Right vertex: B_right = (260 + 160, 340) = (420, 340) [side b = 160]\n       Hypotenuse connects (260, 220) to (420, 340) [length = 200]\n  -->\n\n  <!-- Squares on sides -->\n  \n  <!-- Square on side a (left, 120x120) built outwards to the left -->\n  <g class=\"sq-anim\">\n    <rect x=\"140\" y=\"220\" width=\"120\" height=\"120\" fill=\"#ebf8ff\" stroke=\"#3182ce\" stroke-width=\"3\"/>\n  </g>\n  <!-- Grid lines for square a -->\n  <line x1=\"140\" y1=\"260\" x2=\"260\" y2=\"260\" stroke=\"#90cdf4\" stroke-dasharray=\"4\"/>\n  <line x1=\"140\" y1=\"300\" x2=\"260\" y2=\"300\" stroke=\"#90cdf4\" stroke-dasharray=\"4\"/>\n  <line x1=\"180\" y1=\"220\" x2=\"180\" y2=\"340\" stroke=\"#90cdf4\" stroke-dasharray=\"4\"/>\n  <line x1=\"220\" y1=\"220\" x2=\"220\" y2=\"340\" stroke=\"#90cdf4\" stroke-dasharray=\"4\"/>\n\n  <!-- Square on side b (bottom, 160x160) built outwards downwards -->\n  <g class=\"sq-anim\">\n    <rect x=\"260\" y=\"340\" width=\"160\" height=\"160\" fill=\"#fff5f5\" stroke=\"#e53e3e\" stroke-width=\"3\"/>\n  </g>\n  <!-- Grid lines for square b -->\n  <line x1=\"300\" y1=\"340\" x2=\"300\" y2=\"500\" stroke=\"#feb2b2\" stroke-dasharray=\"4\"/>\n  <line x1=\"340\" y1=\"340\" x2=\"340\" y2=\"500\" stroke=\"#feb2b2\" stroke-dasharray=\"4\"/>\n  <line x1=\"380\" y1=\"340\" x2=\"380\" y2=\"500\" stroke=\"#feb2b2\" stroke-dasharray=\"4\"/>\n  <line x1=\"260\" y1=\"380\" x2=\"420\" y2=\"380\" stroke=\"#feb2b2\" stroke-dasharray=\"4\"/>\n  <line x1=\"260\" y1=\"420\" x2=\"420\" y2=\"420\" stroke=\"#feb2b2\" stroke-dasharray=\"4\"/>\n  <line x1=\"260\" y1=\"460\" x2=\"420\" y2=\"460\" stroke=\"#feb2b2\" stroke-dasharray=\"4\"/>\n\n  <!-- Square on hypotenuse c (200x200) built outwards up-right -->\n  <!-- Vector from (260,220) to (420,340) is dx=160, dy=120. \n       Perpendicular outward vector is (-120, 160). Normalized & scaled to 200: \n       Actually, standard rotation: dx' = dy = 120, dy' = -dx = -160.\n       Top-left of hypotenuse square is (260, 220), top-right is (420, 340).\n       Wait, let's construct it precisely using polygon vertices:\n       P1 = (260, 220)\n       P2 = (420, 340)\n       P3 = P2 + (-120, -160) = (300, 180) -> Let's check geometry:\n       Vector P1->P2 is (160, 120). Perp outward is (-120, 160).\n       P4 = P1 + (-120, 160) = (140, 380)? No, let's use exact coordinates for 3-4-5 triangle square.\n       For a triangle with legs 160 and 120, hypotenuse is 200.\n       The square on hypotenuse extends upwards and to the right.\n       Vertices: (260, 220), (420, 340), and offset by (-120, 160)... \n       Let's use simple verified coordinates for the c² square:\n       Vertex A: (260, 220)\n       Vertex B: (420, 340)\n       Vertex C_sq: (540, 180)\n       Vertex D_sq: (380, 60)\n       Let's verify side lengths:\n       (420-260)^2 + (340-220)^2 = 160^2 + 120^2 = 25600 + 14400 = 40000 -> sqrt = 200. Correct.\n       (540-420)^2 + (180-340)^2 = 120^2 + (-160)^2 = 14400 + 25600 = 40000 -> sqrt = 200. Correct.\n       (380-540)^2 + (60-180)^2 = (-160)^2 + (-120)^2 = 25600 + 14400 = 40000 -> sqrt = 200. Correct.\n       (260-380)^2 + (220-60)^2 = (-120)^2 + (160)^2 = 14400 + 25600 = 40000 -> sqrt = 200. Correct.\n  -->\n  <g class=\"sq-anim\">\n    <polygon points=\"260,220 420,340 540,180 380,60\" fill=\"#f0fff4\" stroke=\"#38a169\" stroke-width=\"3\"/>\n  </g>\n\n  <!-- Central Right-Angled Triangle (drawn on top of squares) -->\n  <polygon points=\"260,220 260,340 420,340\" fill=\"#fff\" stroke=\"#1a202c\" stroke-width=\"4\" stroke-linejoin=\"round\"/>\n\n  <!-- Right angle marker -->\n  <polyline points=\"260,320 280,320 280,340\" fill=\"none\" stroke=\"#1a202c\" stroke-width=\"2\"/>\n\n  <!-- Side Labels -->\n  <!-- Side a -->\n  <text x=\"235\" y=\"285\" font-size=\"20\" class=\"label-a\" text-anchor=\"middle\">a</text>\n  <!-- Side b -->\n  <text x=\"340\" y=\"365\" font-size=\"20\" class=\"label-b\" text-anchor=\"middle\">b</text>\n  <!-- Side c (Hypotenuse) -->\n  <text x=\"325\" y=\"270\" font-size=\"20\" class=\"label-c\" text-anchor=\"middle\">c</text>\n\n  <!-- Square area labels inside the squares -->\n  <text x=\"200\" y=\"285\" font-size=\"22\" class=\"label-a\" text-anchor=\"middle\" opacity=\"0.8\">a²</text>\n  <text x=\"340\" y=\"425\" font-size=\"22\" class=\"label-b\" text-anchor=\"middle\" opacity=\"0.8\">b²</text>\n  <text x=\"450\" y=\"235\" font-size=\"22\" class=\"label-c\" text-anchor=\"middle\" opacity=\"0.8\">c²</text>\n\n  <!-- Animated floating indicator to show a² + b² = c² -->\n  <g>\n    <rect x=\"80\" y=\"500\" width=\"360\" height=\"60\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e0\" stroke-width=\"2\"/>\n    <text x=\"260\" y=\"536\" font-size=\"20\" text-anchor=\"middle\" fill=\"#2d3748\">\n      <tspan class=\"label-a\">a²</tspan> <tspan fill=\"#2d3748\">+</tspan> <tspan class=\"label-b\">b²</tspan> <tspan fill=\"#2d3748\">=</tspan> <tspan class=\"label-c\">c²</tspan>\n    </text>\n    \n    <!-- Pulsing highlight circle -->\n    <circle cx=\"110\" cy=\"530\" r=\"15\" fill=\"#3182ce\" opacity=\"0.2\">\n      <animate attributeName=\"r\" values=\"10;18;10\" dur=\"2s\" repeatCount=\"indefinite\"/>\n    </circle>\n  </g>\n\n</svg>",
+    "status": "passed",
+    "checks": {
+      "valid_xml": {
+        "passed": true,
+        "reason": "Valid XML with an <svg> root element"
+      },
+      "viewbox_bounds": {
+        "passed": true,
+        "reason": "All 31 measured shapes are inside the viewBox"
+      },
+      "title_and_labels": {
+        "passed": true,
+        "reason": "Title found and 12 text labels"
+      },
+      "animation": {
+        "passed": true,
+        "reason": "Found 1 SMIL animation element(s)"
+      },
+      "security": {
+        "passed": true,
+        "reason": "No scripts, event handlers or external references"
+      }
+    },
+    "tokens": {
+      "input": 344,
+      "output": 3018,
+      "thoughts": 0,
+      "billed_output": 3018
+    },
+    "cost_usd": 0.007648,
+    "pricing": {
+      "input_per_million": 0.3,
+      "output_per_million": 2.5,
+      "note": "Estimated paid-tier equivalent. The free tier charges $0."
+    },
+    "retries": {
+      "api": 3,
+      "validation": 0,
+      "total": 3
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "kind": "initial",
+        "api_retries": 3,
+        "input_tokens": 344,
+        "output_tokens": 3018,
+        "thought_tokens": 0,
+        "finish_reason": "FinishReason.STOP",
+        "error": null,
+        "failures": []
+      }
+    ],
+    "generated_at": "2026-11-24T13:07:48+00:00"
+  },
+  {
+    "concept_id": "2",
+    "concept_name": "Parts of a circle",
+    "subject": "Maths",
+    "model": "gemini-3.5-flash-lite",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\">\n  <title>Parts of a Circle</title>\n  \n  <!-- CSS Animations -->\n  <style>\n    @keyframes pulseCircumference {\n      0% { stroke-dashoffset: 1005; opacity: 0.4; }\n      50% { opacity: 1; }\n      100% { stroke-dashoffset: 0; opacity: 0.4; }\n    }\n    @keyframes fadeIn {\n      0% { opacity: 0; transform: scale(0.9); }\n      100% { opacity: 1; transform: scale(1); }\n    }\n    .animated-circ {\n      stroke-dasharray: 1005;\n      animation: pulseCircumference 4s ease-in-out infinite;\n    }\n    .fade-in {\n      animation: fadeIn 1.5s ease-out forwards;\n    }\n    .label-box {\n      font-family: sans-serif;\n      font-size: 18px;\n      font-weight: bold;\n      fill: #1e293b;\n    }\n    .sub-label {\n      font-family: sans-serif;\n      font-size: 14px;\n      fill: #475569;\n    }\n  </style>\n\n  <!-- Background -->\n  <rect width=\"800\" height=\"600\" fill=\"#f8fafc\" rx=\"16\" />\n\n  <!-- Title -->\n  <text x=\"400\" y=\"40\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"26\" font-weight=\"bold\" fill=\"#0f172a\">Parts of a Circle</text>\n  <text x=\"400\" y=\"68\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#64748b\">GCSE Mathematics</text>\n\n  <!-- Main Circle Group (Centered at 400, 310, Radius 160) -->\n  <g transform=\"translate(400, 310)\">\n    \n    <!-- Circle Fill -->\n    <circle cx=\"0\" cy=\"0\" r=\"160\" fill=\"#e2e8f0\" fill-opacity=\"0.5\" />\n\n    <!-- Diameter Line (Horizontal from (-160,0) to (160,0)) -->\n    <line x1=\"-160\" y1=\"0\" x2=\"160\" y2=\"0\" stroke=\"#ef4444\" stroke-width=\"4\" stroke-linecap=\"round\" />\n\n    <!-- Radius Line (From (0,0) to top-right approx (113, -113)) -->\n    <line x1=\"0\" y1=\"0\" x2=\"113.14\" y2=\"-113.14\" stroke=\"#3b82f6\" stroke-width=\"4\" stroke-linecap=\"round\" />\n\n    <!-- Circumference Animated Highlight -->\n    <circle cx=\"0\" cy=\"0\" r=\"160\" fill=\"none\" stroke=\"#10b981\" stroke-width=\"6\" class=\"animated-circ\" />\n\n    <!-- Centre Point -->\n    <circle cx=\"0\" cy=\"0\" r=\"7\" fill=\"#0f172a\" />\n    <circle cx=\"0\" cy=\"0\" r=\"12\" fill=\"none\" stroke=\"#0f172a\" stroke-width=\"2\">\n      <animate attributeName=\"r\" values=\"8;16;8\" dur=\"2s\" repeatCount=\"indefinite\" />\n      <animate attributeName=\"opacity\" values=\"1;0;1\" dur=\"2s\" repeatCount=\"indefinite\" />\n    </circle>\n\n    <!-- Centre Label Point Anchor -->\n    <text x=\"-12\" y=\"-15\" class=\"label-box\" font-size=\"16\">Centre</text>\n\n  </g>\n\n  <!-- Labels and Callouts -->\n\n  <!-- 1. Diameter Label (Bottom) -->\n  <g class=\"fade-in\" style=\"animation-delay: 0.2s;\">\n    <line x1=\"240\" y1=\"310\" x2=\"560\" y2=\"310\" stroke=\"#ef4444\" stroke-dasharray=\"4,4\" stroke-width=\"1.5\" opacity=\"0.6\"/>\n    <rect x=\"315\" y=\"325\" width=\"170\" height=\"40\" rx=\"8\" fill=\"#ffffff\" stroke=\"#ef4444\" stroke-width=\"2\" />\n    <text x=\"400\" y=\"350\" text-anchor=\"middle\" class=\"label-box\" fill=\"#ef4444\">Diameter</text>\n    <text x=\"400\" y=\"380\" text-anchor=\"middle\" class=\"sub-label\">Passes through centre (2 × r)</text>\n  </g>\n\n  <!-- 2. Radius Label (Top Right) -->\n  <g class=\"fade-in\" style=\"animation-delay: 0.4s;\">\n    <line x1=\"400\" y1=\"310\" x2=\"513\" y2=\"197\" stroke=\"#3b82f6\" stroke-dasharray=\"4,4\" stroke-width=\"1.5\" opacity=\"0.6\"/>\n    <rect x=\"530\" y=\"150\" width=\"160\" height=\"40\" rx=\"8\" fill=\"#ffffff\" stroke=\"#3b82f6\" stroke-width=\"2\" />\n    <text x=\"610\" y=\"175\" text-anchor=\"middle\" class=\"label-box\" fill=\"#3b82f6\">Radius</text>\n    <text x=\"610\" y=\"205\" text-anchor=\"middle\" class=\"sub-label\">Centre to edge</text>\n  </g>\n\n  <!-- 3. Circumference Label (Top Left) -->\n  <g class=\"fade-in\" style=\"animation-delay: 0.6s;\">\n    <path d=\"M 287,197 Q 340,150 400,150\" fill=\"none\" stroke=\"#10b981\" stroke-dasharray=\"4,4\" stroke-width=\"1.5\" opacity=\"0.6\"/>\n    <rect x=\"90\" y=\"150\" width=\"180\" height=\"40\" rx=\"8\" fill=\"#ffffff\" stroke=\"#10b981\" stroke-width=\"2\" />\n    <text x=\"180\" y=\"175\" text-anchor=\"middle\" class=\"label-box\" fill=\"#10b981\">Circumference</text>\n    <text x=\"180\" y=\"205\" text-anchor=\"middle\" class=\"sub-label\">Distance around edge</text>\n  </g>\n\n  <!-- 4. Centre Label (Bottom Left) -->\n  <g class=\"fade-in\" style=\"animation-delay: 0.8s;\">\n    <line x1=\"400\" y1=\"310\" x2=\"240\" y2=\"450\" stroke=\"#0f172a\" stroke-dasharray=\"4,4\" stroke-width=\"1.5\" opacity=\"0.6\"/>\n    <rect x=\"150\" y=\"450\" width=\"150\" height=\"40\" rx=\"8\" fill=\"#ffffff\" stroke=\"#0f172a\" stroke-width=\"2\" />\n    <text x=\"225\" y=\"475\" text-anchor=\"middle\" class=\"label-box\">Centre</text>\n    <text x=\"225\" y=\"505\" text-anchor=\"middle\" class=\"sub-label\">Middle point (origin)</text>\n  </g>\n\n</svg>",
+    "status": "passed",
+    "checks": {
+      "valid_xml": {
+        "passed": true,
+        "reason": "Valid XML with an <svg> root element"
+      },
+      "viewbox_bounds": {
+        "passed": true,
+        "reason": "All 25 measured shapes are inside the viewBox; 1 part(s) not checked (paths or complex transforms)"
+      },
+      "title_and_labels": {
+        "passed": true,
+        "reason": "Title found and 11 text labels"
+      },
+      "animation": {
+        "passed": true,
+        "reason": "Found 2 SMIL animation element(s)"
+      },
+      "security": {
+        "passed": true,
+        "reason": "No scripts, event handlers or external references"
+      }
+    },
+    "tokens": {
+      "input": 322,
+      "output": 1896,
+      "thoughts": 0,
+      "billed_output": 1896
+    },
+    "cost_usd": 0.004837,
+    "pricing": {
+      "input_per_million": 0.3,
+      "output_per_million": 2.5,
+      "note": "Estimated paid-tier equivalent. The free tier charges $0."
+    },
+    "retries": {
+      "api": 2,
+      "validation": 0,
+      "total": 2
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "kind": "initial",
+        "api_retries": 2,
+        "input_tokens": 322,
+        "output_tokens": 1896,
+        "thought_tokens": 0,
+        "finish_reason": "FinishReason.STOP",
+        "error": null,
+        "failures": []
+      }
+    ],
+    "generated_at": "2026-11-24T13:08:55+00:00"
+  },
+  {
+    "concept_id": "3",
+    "concept_name": "Series circuit",
+    "subject": "Physics",
+    "model": "gemini-3.5-flash-lite",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\">\n  <title>GCSE Physics Series Circuit</title>\n  \n  <style>\n    .bg { fill: #f8fafc; }\n    .wire { fill: none; stroke: #334155; stroke-width: 4; stroke-linejoin: round; }\n    .label { font-family: sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; text-anchor: middle; }\n    .sublabel { font-family: sans-serif; font-size: 14px; fill: #64748b; text-anchor: middle; }\n    .title { font-family: sans-serif; font-size: 22px; font-weight: bold; fill: #0f172a; text-anchor: middle; }\n    .electron { fill: #2563eb; }\n  </style>\n\n  <rect width=\"800\" height=\"600\" class=\"bg\"/>\n\n  <!-- Diagram Title -->\n  <text x=\"400\" y=\"45\" class=\"title\">Series Circuit: Single Loop &amp; Current</text>\n\n  <!-- Explanation Box -->\n  <rect x=\"150\" y=\"65\" width=\"500\" height=\"55\" rx=\"8\" fill=\"#e2e8f0\" stroke=\"#cbd5e1\" stroke-width=\"2\"/>\n  <text x=\"400\" y=\"90\" class=\"sublabel\" font-size=\"15\" font-weight=\"bold\">Current is the same everywhere. Voltage is shared.</text>\n  <text x=\"400\" y=\"110\" class=\"sublabel\" font-size=\"13\">One continuous loop with no branches.</text>\n\n  <!-- CIRCUIT WIRES (Single Closed Loop) - inset safely within 20px margin -->\n  <rect x=\"220\" y=\"170\" width=\"360\" height=\"340\" rx=\"12\" class=\"wire\"/>\n\n  <!-- COMPONENTS -->\n\n  <!-- Cell (Top) -->\n  <g transform=\"translate(400, 170)\">\n    <line x1=\"-30\" y1=\"-12\" x2=\"-30\" y2=\"12\" stroke=\"#334155\" stroke-width=\"6\"/>\n    <line x1=\"-15\" y1=\"-22\" x2=\"-15\" y2=\"22\" stroke=\"#334155\" stroke-width=\"4\"/>\n    <line x1=\"15\" y1=\"-12\" x2=\"15\" y2=\"12\" stroke=\"#334155\" stroke-width=\"6\"/>\n    <line x1=\"30\" y1=\"-22\" x2=\"30\" y2=\"22\" stroke=\"#334155\" stroke-width=\"4\"/>\n    <text x=\"-50\" y=\"-5\" class=\"label\" font-size=\"20\">+</text>\n    <text x=\"50\" y=\"-5\" class=\"label\" font-size=\"20\">-</text>\n  </g>\n  <text x=\"400\" y=\"142\" class=\"label\">Cell (Voltage V)</text>\n\n  <!-- Lamp (Right) -->\n  <g transform=\"translate(580, 340)\">\n    <circle cx=\"0\" cy=\"0\" r=\"26\" fill=\"#fef08a\" stroke=\"#334155\" stroke-width=\"4\"/>\n    <path d=\"M -15 -15 L 15 15 M -15 15 L 15 -15\" stroke=\"#334155\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"655\" y=\"335\" class=\"label\" text-anchor=\"start\">Lamp</text>\n  <text x=\"655\" y=\"355\" class=\"sublabel\" text-anchor=\"start\">Shares voltage</text>\n\n  <!-- Resistor (Bottom) -->\n  <g transform=\"translate(400, 510)\">\n    <rect x=\"-40\" y=\"-15\" width=\"80\" height=\"30\" fill=\"#ffffff\" stroke=\"#334155\" stroke-width=\"4\" rx=\"4\"/>\n    <path d=\"M -30 0 L -20 -10 L -10 10 L 0 -10 L 10 10 L 20 -10 L 30 0\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"3\"/>\n  </g>\n  <text x=\"400\" y=\"565\" class=\"label\">Resistor</text>\n  <text x=\"400\" y=\"583\" class=\"sublabel\">Shares voltage</text>\n\n  <!-- ANIMATED CURRENT (Moving Electrons) -->\n  <!-- Path definition matching the inner loop: Top(400,170) -> Right(580,170) -> Right(580,510) -> Bottom(400,510) -> Left(220,510) -> Left(220,170) -> Top(400,170) -->\n  <path id=\"circuit-path\" d=\"M 400 170 \n             L 580 170 \n             L 580 510 \n             L 220 510 \n             L 220 170 \n             Z\" fill=\"none\" />\n\n  <!-- Electron Dots with SMIL Animation -->\n  <circle r=\"6\" class=\"electron\">\n    <animateMotion dur=\"4s\" repeatCount=\"indefinite\">\n      <mpath href=\"#circuit-path\"/>\n    </animateMotion>\n  </circle>\n\n  <circle r=\"6\" class=\"electron\">\n    <animateMotion dur=\"4s\" begin=\"1.33s\" repeatCount=\"indefinite\">\n      <mpath href=\"#circuit-path\"/>\n    </animateMotion>\n  </circle>\n\n  <circle r=\"6\" class=\"electron\">\n    <animateMotion dur=\"4s\" begin=\"2.66s\" repeatCount=\"indefinite\">\n      <mpath href=\"#circuit-path\"/>\n    </animateMotion>\n  </circle>\n\n  <!-- Label for current indicator (safely inside left margin >= 20) -->\n  <text x=\"210\" y=\"335\" class=\"label\" text-anchor=\"end\">Current (I)</text>\n  <text x=\"210\" y=\"355\" class=\"sublabel\" text-anchor=\"end\">Same everywhere</text>\n\n</svg>",
+    "status": "failed",
+    "checks": {
+      "valid_xml": {
+        "passed": true,
+        "reason": "Valid XML with an <svg> root element"
+      },
+      "viewbox_bounds": {
+        "passed": false,
+        "reason": "4 element(s) outside the 800x600 viewBox: <text> right edge at 812; <circle> left edge at -6, top edge at -6; <circle> left edge at -6, top edge at -6 (+1 more)"
+      },
+      "title_and_labels": {
+        "passed": true,
+        "reason": "Title found and 12 text labels"
+      },
+      "animation": {
+        "passed": true,
+        "reason": "Found 3 SMIL animation element(s)"
+      },
+      "security": {
+        "passed": true,
+        "reason": "No scripts, event handlers or external references"
+      }
+    },
+    "tokens": {
+      "input": 2332,
+      "output": 3215,
+      "thoughts": 0,
+      "billed_output": 3215
+    },
+    "cost_usd": 0.008737,
+    "pricing": {
+      "input_per_million": 0.3,
+      "output_per_million": 2.5,
+      "note": "Estimated paid-tier equivalent. The free tier charges $0."
+    },
+    "retries": {
+      "api": 3,
+      "validation": 1,
+      "total": 4
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "kind": "initial",
+        "api_retries": 0,
+        "input_tokens": 316,
+        "output_tokens": 1597,
+        "thought_tokens": 0,
+        "finish_reason": "FinishReason.STOP",
+        "error": null,
+        "failures": [
+          "viewbox_bounds: 5 element(s) outside the 800x600 viewBox: <text> right edge at 812; <text> right edge at 803; <circle> left edge at -6, top edge at -6 (+2 more)"
+        ]
+      },
+      {
+        "attempt": 2,
+        "kind": "correction",
+        "api_retries": 3,
+        "input_tokens": 2016,
+        "output_tokens": 1618,
+        "thought_tokens": 0,
+        "finish_reason": "FinishReason.STOP",
+        "error": null,
+        "failures": [
+          "viewbox_bounds: 4 element(s) outside the 800x600 viewBox: <text> right edge at 812; <circle> left edge at -6, top edge at -6; <circle> left edge at -6, top edge at -6 (+1 more)"
+        ]
+      }
+    ],
+    "generated_at": "2026-11-24T13:20:14+00:00"
+  },
+  {
+    "concept_id": "5",
+    "concept_name": "States of matter",
+    "subject": "Chemistry",
+    "model": "gemini-3.5-flash-lite",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\">\n  <title>States of Matter - GCSE Chemistry</title>\n  <style>\n    .bg { fill: #f8fafc; }\n    .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 3; rx: 12; }\n    .label { font-family: sans-serif; font-size: 20px; font-weight: bold; fill: #1e293b; text-anchor: middle; }\n    .sublabel { font-family: sans-serif; font-size: 14px; fill: #64748b; text-anchor: middle; }\n    .particle { fill: #3b82f6; stroke: #1d4ed8; stroke-width: 2; }\n    .liquid-particle { fill: #10b981; stroke: #047857; stroke-width: 2; }\n    .gas-particle { fill: #ef4444; stroke: #b91c1c; stroke-width: 2; }\n    .arrow { stroke: #94a3b8; stroke-width: 3; fill: none; stroke-dasharray: 6 6; }\n    \n    /* Solid particle vibration */\n    @keyframes vibrate {\n      0% { transform: translate(0, 0); }\n      25% { transform: translate(-2px, 1px); }\n      50% { transform: translate(1px, -2px); }\n      75% { transform: translate(2px, 2px); }\n      100% { transform: translate(0, 0); }\n    }\n    .v1 { animation: vibrate 0.3s infinite ease-in-out; }\n    .v2 { animation: vibrate 0.25s infinite ease-in-out; }\n    .v3 { animation: vibrate 0.35s infinite ease-in-out; }\n\n    /* Gas fast movement */\n    @keyframes bounce1 {\n      0% { transform: translate(0, 0); }\n      33% { transform: translate(-30px, 40px); }\n      66% { transform: translate(25px, -30px); }\n      100% { transform: translate(0, 0); }\n    }\n    @keyframes bounce2 {\n      0% { transform: translate(0, 0); }\n      33% { transform: translate(35px, -25px); }\n      66% { transform: translate(-20px, 35px); }\n      100% { transform: translate(0, 0); }\n    }\n    @keyframes bounce3 {\n      0% { transform: translate(0, 0); }\n      33% { transform: translate(-40px, -20px); }\n      66% { transform: translate(30px, 30px); }\n      100% { transform: translate(0, 0); }\n    }\n    @keyframes bounce4 {\n      0% { transform: translate(0, 0); }\n      33% { transform: translate(20px, 45px); }\n      66% { transform: translate(-35px, -15px); }\n      100% { transform: translate(0, 0); }\n    }\n    .g1 { animation: bounce1 1.2s infinite ease-in-out; }\n    .g2 { animation: bounce2 1.0s infinite ease-in-out; }\n    .g3 { animation: bounce3 1.4s infinite ease-in-out; }\n    .g4 { animation: bounce4 1.1s infinite ease-in-out; }\n\n    /* Liquid flow movement */\n    @keyframes flow1 {\n      0% { transform: translate(0, 0); }\n      50% { transform: translate(12px, -8px); }\n      100% { transform: translate(0, 0); }\n    }\n    @keyframes flow2 {\n      0% { transform: translate(0, 0); }\n      50% { transform: translate(-10px, 10px); }\n      100% { transform: translate(0, 0); }\n    }\n    .l1 { animation: flow1 2s infinite ease-in-out; }\n    .l2 { animation: flow2 2.2s infinite ease-in-out; }\n  </style>\n\n  <!-- Background -->\n  <rect width=\"800\" height=\"600\" class=\"bg\" />\n\n  <!-- Title -->\n  <text x=\"400\" y=\"45\" style=\"font-family: sans-serif; font-size: 26px; font-weight: bold; fill: #0f172a; text-anchor: middle;\">States of Matter</text>\n  <text x=\"400\" y=\"70\" style=\"font-family: sans-serif; font-size: 16px; fill: #475569; text-anchor: middle;\">How particles are arranged and move in different states</text>\n\n  <!-- ==================== SOLID BOX ==================== -->\n  <g transform=\"translate(40, 100)\">\n    <rect width=\"210\" height=\"380\" class=\"box\" />\n    <text x=\"105\" y=\"35\" class=\"label\">Solid</text>\n    <text x=\"105\" y=\"55\" class=\"sublabel\">Close, regular, vibrating</text>\n    \n    <!-- Solid Particles Grid (vibrating) -->\n    <g transform=\"translate(30, 90)\">\n      <!-- Row 1 -->\n      <circle cx=\"20\" cy=\"20\" r=\"14\" class=\"particle v1\" />\n      <circle cx=\"60\" cy=\"20\" r=\"14\" class=\"particle v2\" />\n      <circle cx=\"100\" cy=\"20\" r=\"14\" class=\"particle v3\" />\n      <circle cx=\"140\" cy=\"20\" r=\"14\" class=\"particle v1\" />\n      <!-- Row 2 -->\n      <circle cx=\"20\" cy=\"65\" r=\"14\" class=\"particle v3\" />\n      <circle cx=\"60\" cy=\"65\" r=\"14\" class=\"particle v1\" />\n      <circle cx=\"100\" cy=\"65\" r=\"14\" class=\"particle v2\" />\n      <circle cx=\"140\" cy=\"65\" r=\"14\" class=\"particle v3\" />\n      <!-- Row 3 -->\n      <circle cx=\"20\" cy=\"110\" r=\"14\" class=\"particle v2\" />\n      <circle cx=\"60\" cy=\"110\" r=\"14\" class=\"particle v3\" />\n      <circle cx=\"100\" cy=\"110\" r=\"14\" class=\"particle v1\" />\n      <circle cx=\"140\" cy=\"110\" r=\"14\" class=\"particle v2\" />\n      <!-- Row 4 -->\n      <circle cx=\"20\" cy=\"155\" r=\"14\" class=\"particle v1\" />\n      <circle cx=\"60\" cy=\"155\" r=\"14\" class=\"particle v2\" />\n      <circle cx=\"100\" cy=\"155\" r=\"14\" class=\"particle v3\" />\n      <circle cx=\"140\" cy=\"155\" r=\"14\" class=\"particle v1\" />\n      <!-- Row 5 -->\n      <circle cx=\"20\" cy=\"200\" r=\"14\" class=\"particle v3\" />\n      <circle cx=\"60\" cy=\"200\" r=\"14\" class=\"particle v1\" />\n      <circle cx=\"100\" cy=\"200\" r=\"14\" class=\"particle v2\" />\n      <circle cx=\"140\" cy=\"200\" r=\"14\" class=\"particle v3\" />\n    </g>\n\n    <text x=\"105\" y=\"340\" class=\"sublabel\" style=\"font-size: 13px;\">• Strong forces</text>\n    <text x=\"105\" y=\"360\" class=\"sublabel\" style=\"font-size: 13px;\">• Fixed shape &amp; volume</text>\n  </g>\n\n  <!-- Arrow 1 -->\n  <path d=\"M 265 290 L 295 290\" class=\"arrow\" />\n  <polygon points=\"295,285 305,290 295,295\" fill=\"#94a3b8\" />\n  <text x=\"285\" y=\"270\" style=\"font-family: sans-serif; font-size: 12px; fill: #64748b; text-anchor: middle;\">Heat</text>\n\n  <!-- ==================== LIQUID BOX ==================== -->\n  <g transform=\"translate(295, 100)\">\n    <rect width=\"210\" height=\"380\" class=\"box\" />\n    <text x=\"105\" y=\"35\" class=\"label\">Liquid</text>\n    <text x=\"105\" y=\"55\" class=\"sublabel\">Close, random, flow</text>\n    \n    <!-- Liquid Particles (irregular, flowing past each other) -->\n    <g transform=\"translate(25, 90)\">\n      <circle cx=\"30\" cy=\"30\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"70\" cy=\"25\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"115\" cy=\"35\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"150\" cy=\"25\" r=\"14\" class=\"liquid-particle l2\" />\n\n      <circle cx=\"20\" cy=\"75\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"60\" cy=\"70\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"100\" cy=\"80\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"145\" cy=\"70\" r=\"14\" class=\"liquid-particle l1\" />\n\n      <circle cx=\"35\" cy=\"125\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"80\" cy=\"120\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"120\" cy=\"125\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"155\" cy=\"130\" r=\"14\" class=\"liquid-particle l2\" />\n\n      <circle cx=\"25\" cy=\"175\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"65\" cy=\"170\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"105\" cy=\"180\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"140\" cy=\"175\" r=\"14\" class=\"liquid-particle l1\" />\n\n      <circle cx=\"45\" cy=\"215\" r=\"14\" class=\"liquid-particle l1\" />\n      <circle cx=\"90\" cy=\"220\" r=\"14\" class=\"liquid-particle l2\" />\n      <circle cx=\"130\" cy=\"215\" r=\"14\" class=\"liquid-particle l1\" />\n    </g>\n\n    <text x=\"105\" y=\"340\" class=\"sublabel\" style=\"font-size: 13px;\">• Weaker forces</text>\n    <text x=\"105\" y=\"360\" class=\"sublabel\" style=\"font-size: 13px;\">• Takes shape of container</text>\n  </g>\n\n  <!-- Arrow 2 -->\n  <path d=\"M 520 290 L 550 290\" class=\"arrow\" />\n  <polygon points=\"550,285 560,290 550,295\" fill=\"#94a3b8\" />\n  <text x=\"540\" y=\"270\" style=\"font-family: sans-serif; font-size: 12px; fill: #64748b; text-anchor: middle;\">Heat</text>\n\n  <!-- ==================== GAS BOX ==================== -->\n  <g transform=\"translate(550, 100)\">\n    <rect width=\"210\" height=\"380\" class=\"box\" />\n    <text x=\"105\" y=\"35\" class=\"label\">Gas</text>\n    <text x=\"105\" y=\"55\" class=\"sublabel\">Far apart, fast, random</text>\n    \n    <!-- Gas Particles (widely spaced, fast moving) -->\n    <g transform=\"translate(30, 90)\">\n      <circle cx=\"30\" cy=\"40\" r=\"14\" class=\"gas-particle g1\" />\n      <circle cx=\"140\" cy=\"30\" r=\"14\" class=\"gas-particle g2\" />\n      <circle cx=\"90\" cy=\"90\" r=\"14\" class=\"gas-particle g3\" />\n      <circle cx=\"30\" cy=\"150\" r=\"14\" class=\"gas-particle g4\" />\n      <circle cx=\"150\" cy=\"160\" r=\"14\" class=\"gas-particle g1\" />\n      <circle cx=\"90\" cy=\"210\" r=\"14\" class=\"gas-particle g2\" />\n    </g>\n\n    <text x=\"105\" y=\"340\" class=\"sublabel\" style=\"font-size: 13px;\">• Very weak forces</text>\n    <text x=\"105\" y=\"360\" class=\"sublabel\" style=\"font-size: 13px;\">• Completely fills space</text>\n  </g>\n\n  <!-- Footer note -->\n  <text x=\"400\" y=\"530\" style=\"font-family: sans-serif; font-size: 14px; fill: #64748b; text-anchor: middle;\">Note: Particles themselves do not expand; the spaces between them increase when heated.</text>\n</svg>",
+    "status": "failed",
+    "checks": {
+      "valid_xml": {
+        "passed": true,
+        "reason": "Valid XML with an <svg> root element"
+      },
+      "viewbox_bounds": {
+        "passed": false,
+        "reason": "2 element(s) outside the 800x600 viewBox: <text> right edge at 857; <text> right edge at 827"
+      },
+      "title_and_labels": {
+        "passed": true,
+        "reason": "Title found and 17 text labels"
+      },
+      "animation": {
+        "passed": true,
+        "reason": "CSS animation 'vibrate' is defined and used"
+      },
+      "security": {
+        "passed": true,
+        "reason": "No scripts, event handlers or external references"
+      }
+    },
+    "tokens": {
+      "input": 324,
+      "output": 3562,
+      "thoughts": 0,
+      "billed_output": 3562
+    },
+    "cost_usd": 0.009002,
+    "pricing": {
+      "input_per_million": 0.3,
+      "output_per_million": 2.5,
+      "note": "Estimated paid-tier equivalent. The free tier charges $0."
+    },
+    "retries": {
+      "api": 6,
+      "validation": 1,
+      "total": 7
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "kind": "initial",
+        "api_retries": 3,
+        "input_tokens": 324,
+        "output_tokens": 3562,
+        "thought_tokens": 0,
+        "finish_reason": "FinishReason.STOP",
+        "error": null,
+        "failures": [
+          "viewbox_bounds: 2 element(s) outside the 800x600 viewBox: <text> right edge at 857; <text> right edge at 827"
+        ]
+      },
+      {
+        "attempt": 2,
+        "kind": "correction",
+        "api_retries": 3,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "thought_tokens": 0,
+        "finish_reason": null,
+        "error": "Gemini is overloaded right now. Please try again shortly.",
+        "failures": []
+      }
+    ],
+    "generated_at": "2026-11-24T13:27:01+00:00"
+  }
+]
+======================================================================
+FILE: scripts\check_svg.py
+======================================================================
+import sys
+
+from app import config
+from app.services.svg_validator import validate_svg
+
+
+def main():
+    path = sys.argv[1] if len(sys.argv) > 1 else str(config.BASE_DIR / "test_output.svg")
+    svg = open(path, encoding="utf-8").read()
+    checks = validate_svg(svg)
+    print(f"File: {path}\n")
+    for name, result in checks.items():
+        mark = "PASS" if result["passed"] else "FAIL"
+        print(f"[{mark}] {name}: {result['reason']}")
+
+
+if __name__ == "__main__":
+    main()
+======================================================================
+FILE: scripts\generate_all.py
+======================================================================
+"""Generate diagrams and save them to data/results.json.
+
+  python -m scripts.generate_all                 # all concepts that are missing or failed
+  python -m scripts.generate_all --only 3        # just concept 3 (if missing/failed)
+  python -m scripts.generate_all --only 3 --force  # regenerate 3 even if it passed
+  python -m scripts.generate_all --force         # regenerate everything
+"""
+import argparse
+import json
+import logging
+import os
+import time
+
+from app import config
+from app.concepts import CONCEPTS
+from app.services.orchestrator import GenerationError, generate_diagram
+
+
+def load_results():
+    """Existing results as {concept_id: result}. Empty if the file doesn't exist yet."""
+    if config.RESULTS_FILE.exists():
+        data = json.loads(config.RESULTS_FILE.read_text(encoding="utf-8"))
+        return {item["concept_id"]: item for item in data}
+    return {}
+
+
+def save_results(by_id):
+    """Write results in concept order. Writes to a temp file first, then swaps it in,
+    so a crash mid-write can't leave a half-written results.json."""
+    config.RESULTS_FILE.parent.mkdir(exist_ok=True)
+    ordered = [by_id[cid] for cid in CONCEPTS if cid in by_id]
+    temp = config.RESULTS_FILE.with_suffix(".json.tmp")
+    # ensure_ascii=False keeps symbols like ² and ₂ readable in the file
+    temp.write_text(json.dumps(ordered, indent=2, ensure_ascii=False), encoding="utf-8")
+    os.replace(temp, config.RESULTS_FILE)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate science diagrams")
+    parser.add_argument("--only", nargs="+", metavar="ID", help="concept ids, e.g. --only 2 4")
+    parser.add_argument("--force", action="store_true", help="regenerate even if already passed")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    targets = args.only or list(CONCEPTS)
+    unknown = [cid for cid in targets if cid not in CONCEPTS]
+    if unknown:
+        raise SystemExit(f"Unknown concept id(s): {unknown}. Valid ids: {list(CONCEPTS)}")
+
+    results = load_results()
+    errors = {}
+    generated_any = False
+
+    for cid in targets:
+        existing = results.get(cid)
+        if existing and existing["status"] == "passed" and not args.force:
+            print(f"[{cid}] {CONCEPTS[cid]['name']}: already passed, skipping (use --force)")
+            continue
+
+        if generated_any:
+            time.sleep(config.DELAY_BETWEEN_CONCEPTS)  # be gentle with the free tier
+        generated_any = True
+
+        try:
+            results[cid] = generate_diagram(cid, profile="batch")
+            save_results(results)   # save immediately
+        except GenerationError as error:
+            errors[cid] = error.message
+            print(f"[{cid}] FAILED, keeping the old result if there is one: {error.message}")
+
+    # ---- summary
+    print("\n=== Summary ===")
+    for cid in CONCEPTS:
+        item = results.get(cid)
+        if item:
+            print(f"{cid}. {item['concept_name']:<22} {item['status']:<7} "
+                  f"${item['cost_usd']:<10} retries={item['retries']['total']}")
+        else:
+            print(f"{cid}. {CONCEPTS[cid]['name']:<22} MISSING  {errors.get(cid, '')}")
+    if len(results) < len(CONCEPTS):
+        print("\nSome concepts are missing. Wait a minute, then run the script again.")
+
+
+if __name__ == "__main__":
+    main()
+======================================================================
+FILE: scripts\run_one.py
+======================================================================
+import logging
+import sys
+
+from app import config
+from app.services.orchestrator import GenerationError, generate_diagram
+
+
+def main():
+    concept_id = sys.argv[1] if len(sys.argv) > 1 else "1"
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    try:
+        result = generate_diagram(concept_id)
+    except GenerationError as error:
+        print(f"\nGeneration failed: {error.message}")
+        return
+
+    out_file = config.BASE_DIR / f"test_output_{concept_id}.svg"
+    out_file.write_text(result["svg"], encoding="utf-8")
+
+    print(f"\n=== {result['concept_name']} ===")
+    print(f"Status:  {result['status']}   Model: {result['model']}")
+    print(f"Tokens:  {result['tokens']}")
+    print(f"Cost:    ${result['cost_usd']}  (estimate)")
+    print(f"Retries: {result['retries']}")
+    for name, check in result["checks"].items():
+        print(f"  [{'PASS' if check['passed'] else 'FAIL'}] {name}: {check['reason']}")
+    print(f"\nSVG saved to {out_file}")
+
+
+if __name__ == "__main__":
+    main()
+======================================================================
+FILE: scripts\__init__.py
+======================================================================
+
+======================================================================
+FILE: static\app.js
+======================================================================
+const CHECK_LABELS = {
+  valid_xml: "Valid XML",
+  viewbox_bounds: "Inside viewBox",
+  title_and_labels: "Title + labels",
+  animation: "Animation",
+  security: "Security",
+};
+const REVIEWS_KEY = "sdm_reviews_v1";
+const GENERATE_TIMEOUT_MS = 150000;
+
+const rowsById = {};          // concept id -> its <tr>
+let generating = false;
+
+// ------------------------------------------------------------ small helpers
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+// SVG shown through <img> cannot run scripts. It needs xmlns to render.
+function svgToDataUrl(svg) {
+  if (!/<svg[^>]*\sxmlns\s*=/.test(svg)) {
+    svg = svg.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+function showError(message) {
+  const banner = document.getElementById("error-banner");
+  banner.textContent = message;
+  banner.hidden = false;
+}
+
+function hideError() {
+  document.getElementById("error-banner").hidden = true;
+}
+
+// ---------------------------------------------------- reviews (localStorage)
+function loadReviews() {
+  try {
+    return JSON.parse(localStorage.getItem(REVIEWS_KEY)) || {};
+  } catch (error) {
+    return {};   // storage blocked or data damaged: start empty instead of crashing
+  }
+}
+
+function saveReviews(reviews) {
+  try {
+    localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews));
+  } catch (error) {
+    showError("Could not save your review in this browser. Is storage blocked or full?");
+  }
+}
+
+function updateReview(result, changes) {
+  const reviews = loadReviews();
+  const current = reviews[result.concept_id] || { status: null, note: "" };
+  reviews[result.concept_id] = {
+    ...current,
+    ...changes,
+    version: result.generated_at,          // which version of the diagram this was for
+    updatedAt: new Date().toISOString(),
+  };
+  saveReviews(reviews);
+}
+
+function buildReviewCell(result) {
+  const cell = el("td", "review-cell");
+  const saved = loadReviews()[result.concept_id] || { status: null, note: "" };
+  let current = saved.status;
+
+  const statusText = el("div", "review-status");
+  const approveBtn = el("button", "btn approve", "Approve");
+  const rejectBtn = el("button", "btn reject", "Reject");
+  const note = document.createElement("textarea");
+  note.placeholder = "Reviewer note…";
+  note.rows = 3;
+  note.value = saved.note || "";
+  note.setAttribute("aria-label", "Reviewer note for " + result.concept_name);
+
+  const warning = el("div", "warn small",
+    "This review was made for an earlier version of this diagram.");
+  warning.hidden = !((saved.status || saved.note) && saved.version &&
+                     saved.version !== result.generated_at);
+
+  function paint() {
+    approveBtn.classList.toggle("active", current === "approved");
+    rejectBtn.classList.toggle("active", current === "rejected");
+    approveBtn.setAttribute("aria-pressed", String(current === "approved"));
+    rejectBtn.setAttribute("aria-pressed", String(current === "rejected"));
+    statusText.textContent = current ? "Decision: " + current : "Not reviewed yet";
+  }
+
+  function choose(choice) {
+    current = current === choice ? null : choice;   // clicking the active button clears it
+    warning.hidden = true;
+    updateReview(result, { status: current });
+    paint();
+  }
+
+  approveBtn.addEventListener("click", () => choose("approved"));
+  rejectBtn.addEventListener("click", () => choose("rejected"));
+  note.addEventListener("input", () => {
+    warning.hidden = true;
+    updateReview(result, { note: note.value });
+  });
+
+  paint();
+  const buttons = el("div", "btn-row");
+  buttons.append(approveBtn, rejectBtn);
+  cell.append(statusText, buttons, note, warning);
+  return cell;
+}
+
+// ------------------------------------------------------------- table rows
+function renderRow(result, isLive) {
+  const row = el("tr");
+  row.dataset.id = result.concept_id;
+
+  // 1. Concept
+  const conceptCell = el("td");
+  conceptCell.append(
+    el("strong", "", result.concept_name),
+    el("div", "muted", result.subject),
+    el("span", "badge " + (result.status === "passed" ? "pass" : "fail"),
+       result.status === "passed" ? "All checks passed" : "Some checks failed"),
+    el("div", "muted small", "Model: " + result.model)
+  );
+  if (isLive) {
+    conceptCell.append(el("div", "badge live", "Live result (not saved on the server)"));
+  }
+
+  // 2. Diagram
+  const diagramCell = el("td");
+  if (result.svg) {
+    const img = el("img", "diagram");
+    img.src = svgToDataUrl(result.svg);
+    img.alt = "Diagram: " + result.concept_name;
+    diagramCell.append(img);
+  } else {
+    diagramCell.append(el("em", "muted", "No SVG was produced"));
+  }
+
+  // 3. Checks
+  const checksCell = el("td");
+  for (const [key, check] of Object.entries(result.checks)) {
+    const line = el("div", "check");
+    line.append(
+      el("span", "badge " + (check.passed ? "pass" : "fail"),
+         (check.passed ? "PASS " : "FAIL ") + (CHECK_LABELS[key] || key)),
+      el("div", "muted small", check.reason)
+    );
+    checksCell.append(line);
+  }
+
+  // 4. Cost
+  const costCell = el("td");
+  costCell.append(
+    el("strong", "", "$" + result.cost_usd.toFixed(6)),
+    el("div", "muted small",
+       `in ${result.tokens.input} / out ${result.tokens.output} / thinking ${result.tokens.thoughts} tokens`)
+  );
+
+  // 5. Retries
+  const retriesCell = el("td");
+  retriesCell.append(
+    el("strong", "", String(result.retries.total)),
+    el("div", "muted small",
+       `API: ${result.retries.api}, validation: ${result.retries.validation}`)
+  );
+
+  row.append(conceptCell, diagramCell, checksCell, costCell, retriesCell,
+             buildReviewCell(result));
+  return row;
+}
+
+// Put a result in the table: replaces the concept's row, or adds it if new
+function placeRow(result, isLive) {
+  const newRow = renderRow(result, isLive);
+  const old = rowsById[result.concept_id];
+  if (old) {
+    old.replaceWith(newRow);
+  } else {
+    document.getElementById("results-body").append(newRow);
+  }
+  rowsById[result.concept_id] = newRow;
+}
+
+// ------------------------------------------------------------ live generate
+async function generate() {
+  if (generating) return;   // ignore double clicks
+
+  const select = document.getElementById("concept-select");
+  const button = document.getElementById("generate-btn");
+  const status = document.getElementById("generate-status");
+  const conceptId = select.value;
+
+  generating = true;
+  button.disabled = true;
+  select.disabled = true;
+  button.classList.add("loading");
+  status.textContent = "Generating… this can take up to a minute.";
+  hideError();
+  if (rowsById[conceptId]) rowsById[conceptId].classList.add("busy");
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GENERATE_TIMEOUT_MS);
+
+  try {
+    let response;
+    try {
+      response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ concept_id: conceptId }),
+        signal: controller.signal,
+      });
+    } catch (error) {
+      throw new Error(
+        error.name === "AbortError"
+          ? "The request took too long and was cancelled. Please try again."
+          : "Could not reach the server. If the site was idle it may still be waking up, so try again in a minute."
+      );
+    }
+
+    let data = null;
+    try { data = await response.json(); } catch (error) { /* not JSON */ }
+
+    if (!response.ok) {
+      throw new Error((data && data.error) ||
+        `The server returned an error (status ${response.status}). Please try again.`);
+    }
+    if (!data || !data.checks) {
+      throw new Error("The server sent an unreadable response.");
+    }
+
+    placeRow(data, true);
+    status.textContent = data.status === "passed"
+      ? `Done: ${data.concept_name} passed all checks.`
+      : `Done: ${data.concept_name} failed some checks (see its row).`;
+  } catch (error) {
+    showError("Generation failed: " + error.message);
+    status.textContent = "";
+  } finally {
+    clearTimeout(timer);
+    generating = false;
+    button.disabled = false;
+    select.disabled = false;
+    button.classList.remove("loading");
+    if (rowsById[conceptId]) rowsById[conceptId].classList.remove("busy");
+  }
+}
+
+// -------------------------------------------------------------------- start
+async function init() {
+  try {
+    const response = await fetch("/api/results");
+    if (!response.ok) throw new Error("Server returned " + response.status);
+    const data = await response.json();
+    if (!data.results.length) {
+      showError("No saved results found. Run: python -m scripts.generate_all");
+      return;
+    }
+
+    const select = document.getElementById("concept-select");
+    data.results.forEach((result) => {
+      placeRow(result, false);
+      const option = el("option", "", `${result.concept_id}. ${result.concept_name}`);
+      option.value = result.concept_id;
+      select.append(option);
+    });
+
+    document.getElementById("results-table").hidden = false;
+    select.disabled = false;
+    const button = document.getElementById("generate-btn");
+    button.disabled = false;
+    button.addEventListener("click", generate);
+  } catch (error) {
+    showError("Could not load results: " + error.message);
+  } finally {
+    document.getElementById("loading").hidden = true;
+  }
+}
+
+init();
+======================================================================
+FILE: static\index.html
+======================================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Science Diagram Maker</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Science Diagram Maker</h1>
+    <p>AI-generated animated science diagrams, checked by code and reviewed by you.</p>
+  </header>
+
+  <main>
+    <div id="error-banner" class="error" role="alert" hidden></div>
+
+    <section class="panel">
+      <h2>Generate live</h2>
+      <p class="muted">
+        Runs the full pipeline for one concept: Gemini, then 5 code checks, then one retry if a
+        check fails. It can take 10 to 60 seconds. The new result replaces that row for now;
+        refreshing the page brings back the saved version.
+      </p>
+      <div class="generate-controls">
+        <select id="concept-select" aria-label="Concept to generate" disabled></select>
+        <button id="generate-btn" class="primary" disabled>Generate</button>
+        <span id="generate-status" class="muted" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <p class="muted small">
+      Approve/Reject decisions and notes are saved in <strong>this browser only</strong>
+      (localStorage), so they are not shared between devices or people.
+    </p>
+
+    <p id="loading">Loading results…</p>
+
+    <div class="table-wrap">
+      <table id="results-table" hidden>
+        <thead>
+          <tr>
+            <th>Concept</th>
+            <th>Diagram</th>
+            <th>Checks</th>
+            <th>Cost (estimate)</th>
+            <th>Retries</th>
+            <th>Review</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+======================================================================
+FILE: static\style.css
+======================================================================
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f4f6f8; color: #1f2933; }
+header { background: #1f3a5f; color: #fff; padding: 1.2rem 1.5rem; }
+header h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
+header p { margin: 0; opacity: .85; }
+main { padding: 1.5rem; max-width: 1300px; margin: 0 auto; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: .75rem; border-bottom: 1px solid #dde3ea; text-align: left; vertical-align: top; }
+th { background: #eaeff5; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+
+img.diagram { width: 320px; max-width: 100%; border: 1px solid #dde3ea; border-radius: 6px; background: #fff; }
+
+.badge { display: inline-block; padding: .1rem .5rem; border-radius: 999px; font-size: .75rem; font-weight: 600; }
+.badge.pass { background: #d6f5e0; color: #11693a; }
+.badge.fail { background: #fddcdc; color: #a11a1a; }
+
+.check { margin-bottom: .5rem; max-width: 280px; }
+.muted { color: #5f6c7b; }
+.small { font-size: .78rem; margin-top: .15rem; }
+
+.error { background: #fddcdc; color: #a11a1a; border: 1px solid #e99; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+
+
+/* --- generate panel --- */
+.panel { background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.panel h2 { margin: 0 0 .4rem; font-size: 1.1rem; }
+.panel p { margin: 0 0 .8rem; }
+.generate-controls { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+select { padding: .45rem .6rem; border: 1px solid #b8c2cf; border-radius: 6px; font-size: 1rem; background: #fff; }
+
+/* --- buttons --- */
+button { font: inherit; cursor: pointer; border-radius: 6px; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+.primary { background: #1f3a5f; color: #fff; border: none; padding: .5rem 1.2rem; font-weight: 600; }
+.primary.loading::before {
+  content: ""; display: inline-block; width: .9em; height: .9em; margin-right: .5em;
+  border: 2px solid #fff; border-right-color: transparent; border-radius: 50%;
+  vertical-align: -.1em; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- review column --- */
+.review-cell { min-width: 220px; }
+.review-status { font-size: .85rem; color: #5f6c7b; margin-bottom: .4rem; }
+.btn-row { display: flex; gap: .5rem; margin-bottom: .5rem; }
+.btn { padding: .35rem .9rem; border: 2px solid #b8c2cf; background: #fff; font-weight: 600; }
+.btn.approve.active { background: #d6f5e0; border-color: #11693a; color: #11693a; }
+.btn.reject.active { background: #fddcdc; border-color: #a11a1a; color: #a11a1a; }
+textarea { width: 100%; font: inherit; font-size: .9rem; padding: .4rem; border: 1px solid #b8c2cf; border-radius: 6px; resize: vertical; }
+.warn { color: #8a5a00; background: #fff3d6; padding: .3rem .5rem; border-radius: 4px; margin-top: .4rem; }
+
+/* --- live / busy states --- */
+.badge.live { background: #fff3d6; color: #8a5a00; margin-top: .4rem; }
+tr.busy { opacity: .5; }
+======================================================================
+FILE: tests\test_api.py
+======================================================================
+from fastapi.testclient import TestClient
+
+from app.main import app
+
+client = TestClient(app)
+
+
+def test_health():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
+
+
+def test_home_page_loads():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Science Diagram Maker" in response.text
+
+
+def test_results_endpoint_returns_five_complete_results():
+    data = client.get("/api/results").json()["results"]
+    assert len(data) == 5
+    for item in data:
+        for field in ("concept_name", "svg", "checks", "cost_usd", "retries", "tokens", "model"):
+            assert field in item
+        assert len(item["checks"]) == 5
+======================================================================
+FILE: tests\test_cost_tracker.py
+======================================================================
+from app.services.cost_tracker import estimate_cost
+
+
+def test_estimate_cost_uses_model_specific_prices():
+    assert estimate_cost(1_000_000, 1_000_000, 100_000, "gemini-3.5-flash") == 4.875
+
+
+def test_estimate_cost_uses_default_price_for_unknown_model():
+    assert estimate_cost(1_000_000, 1_000_000, model="test-model") == 2.8
+
+======================================================================
+FILE: tests\test_generate_api.py
+======================================================================
+import pytest
+from fastapi.testclient import TestClient
+
+from app import config, main
+from app.services.orchestrator import GenerationError
+
+client = TestClient(main.app)
+
+
+@pytest.fixture(autouse=True)
+def reset_protection(monkeypatch):
+    """Each test starts with no cooldown and no previous generation."""
+    monkeypatch.setattr(config, "GENERATE_COOLDOWN_SECONDS", 0)
+    monkeypatch.setattr(main, "_last_finished", None)
+
+
+def post(concept_id="1"):
+    return client.post("/api/generate", json={"concept_id": concept_id})
+
+
+def test_success_returns_the_result(monkeypatch):
+    monkeypatch.setattr(main, "generate_diagram",
+                        lambda cid, profile: {"concept_id": cid, "status": "passed"})
+    response = post("2")
+    assert response.status_code == 200
+    assert response.json() == {"concept_id": "2", "status": "passed"}
+
+
+def test_unknown_concept_is_404():
+    response = post("99")
+    assert response.status_code == 404
+    assert "Unknown concept" in response.json()["error"]
+
+
+def test_missing_body_is_rejected():
+    assert client.post("/api/generate", json={}).status_code == 422
+
+
+def test_gemini_rate_limit_becomes_429_with_clear_message(monkeypatch):
+    def fail(cid, profile):
+        raise GenerationError("Gemini's rate limit was reached. Please wait.", 429)
+    monkeypatch.setattr(main, "generate_diagram", fail)
+    response = post()
+    assert response.status_code == 429
+    assert "rate limit" in response.json()["error"]
+
+
+def test_other_gemini_errors_become_502(monkeypatch):
+    def fail(cid, profile):
+        raise GenerationError("Gemini rejected the API key.", 401)
+    monkeypatch.setattr(main, "generate_diagram", fail)
+    response = post()
+    assert response.status_code == 502
+    assert "API key" in response.json()["error"]
+
+
+def test_unexpected_crash_returns_generic_message(monkeypatch):
+    def boom(cid, profile):
+        raise RuntimeError("secret internal detail")
+    monkeypatch.setattr(main, "generate_diagram", boom)
+    response = post()
+    assert response.status_code == 500
+    assert "secret internal detail" not in response.text
+
+
+def test_second_request_while_busy_is_refused():
+    main._generate_lock.acquire()
+    try:
+        response = post()
+    finally:
+        main._generate_lock.release()
+    assert response.status_code == 429
+    assert "Another diagram" in response.json()["error"]
+
+
+def test_cooldown_blocks_a_quick_second_request(monkeypatch):
+    monkeypatch.setattr(config, "GENERATE_COOLDOWN_SECONDS", 60)
+    monkeypatch.setattr(main, "generate_diagram", lambda cid, profile: {"ok": True})
+    assert post().status_code == 200
+    second = post()
+    assert second.status_code == 429
+    assert "wait" in second.json()["error"].lower()
+    assert "Retry-After" in second.headers
+======================================================================
+FILE: tests\test_orchestrator.py
+======================================================================
+import pytest
+
+from app import config
+from app.services import orchestrator
+from app.services.orchestrator import GenerationError, generate_diagram
+
+GOOD = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<title>T</title><style>@keyframes p{from{opacity:.4}to{opacity:1}}.d{animation:p 1s infinite}</style>
+<circle class="d" cx="400" cy="300" r="50"/>
+<text x="100" y="100" font-size="16">A</text><text x="100" y="150" font-size="16">B</text>
+<text x="100" y="200" font-size="16">C</text></svg>"""
+BAD = GOOD.replace('cx="400"', 'cx="900"')          # circle outside the viewBox
+NO_SVG = "Sorry, I cannot draw that."
+
+
+class ApiError(Exception):
+    def __init__(self, code):
+        super().__init__(f"error {code}")
+        self.code = code
+
+
+def reply(text, inp=100, out=1000, thoughts=0):
+    return {"text": text, "model": config.MODEL_NAME, "input_tokens": inp,
+            "output_tokens": out, "thought_tokens": thoughts, "finish_reason": "STOP"}
+
+
+class Fake:
+    """Returns/raises the scripted items one by one and remembers the prompts."""
+    def __init__(self, *script):
+        self.script, self.prompts = list(script), []
+
+    def __call__(self, prompt):
+        self.prompts.append(prompt)
+        item = self.script.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+
+def run(fake, sleeps=None):
+    sleeps = [] if sleeps is None else sleeps
+    return generate_diagram("1", call_model=fake, sleep=sleeps.append)
+
+
+def test_first_try_pass_has_no_retries():
+    r = run(Fake(reply(GOOD)))
+    assert r["status"] == "passed"
+    assert r["retries"] == {"api": 0, "validation": 0, "total": 0}
+
+
+def test_validation_retry_sends_failed_svg_and_reason():
+    fake = Fake(reply(BAD), reply(GOOD))
+    r = run(fake)
+    assert r["status"] == "passed"
+    assert r["retries"]["validation"] == 1
+    assert "viewbox_bounds" in fake.prompts[1] and 'cx="900"' in fake.prompts[1]
+
+
+def test_only_one_validation_retry():
+    fake = Fake(reply(BAD), reply(BAD))
+    r = run(fake)
+    assert r["status"] == "failed"
+    assert r["retries"]["validation"] == 1
+    assert len(fake.prompts) == 2
+
+
+def test_no_svg_in_reply_is_a_failed_check_not_a_crash():
+    r = run(Fake(reply(NO_SVG), reply(GOOD)))
+    assert r["status"] == "passed" and r["retries"]["validation"] == 1
+
+
+@pytest.mark.parametrize("code", [429, 503])
+def test_api_retry_then_success(code):
+    sleeps = []
+    r = run(Fake(ApiError(code), reply(GOOD)), sleeps)
+    assert r["retries"]["api"] == 1 and len(sleeps) == 1
+
+
+def test_api_retry_gives_up_after_three():
+    sleeps = []
+    with pytest.raises(GenerationError) as info:
+        run(Fake(*[ApiError(429)] * 4), sleeps)
+    assert len(sleeps) == config.MAX_API_RETRIES == 3
+    assert info.value.status_code == 429
+
+
+def test_other_errors_are_not_retried():
+    sleeps = []
+    with pytest.raises(GenerationError):
+        run(Fake(ApiError(401)), sleeps)
+    assert sleeps == []
+
+
+def test_tokens_and_cost_are_summed_over_all_attempts():
+    r = run(Fake(reply(BAD, 100, 1000, 500), reply(GOOD, 200, 2000, 0)))
+    assert r["tokens"] == {"input": 300, "output": 3000, "thoughts": 500, "billed_output": 3500}
+    p = config.PRICES[config.MODEL_NAME]
+    expected = 300 / 1e6 * p["input"] + 3500 / 1e6 * p["output"]
+    assert r["cost_usd"] == pytest.approx(expected, abs=1e-6)
+
+
+def test_failed_correction_call_keeps_the_first_attempt():
+    r = run(Fake(reply(BAD), ApiError(503), ApiError(503), ApiError(503), ApiError(503)))
+    assert r["status"] == "failed" and r["svg"]          # first SVG kept, honestly marked failed
+    assert r["attempts"][-1]["error"]
+
+
+def test_result_has_the_fields_the_page_needs():
+    r = run(Fake(reply(GOOD)))
+    for k in ("concept_id", "concept_name", "model", "svg", "status", "checks",
+              "tokens", "cost_usd", "retries", "attempts"):
+        assert k in r
+    assert len(r["checks"]) == 5
+======================================================================
+FILE: tests\test_svg_validator.py
+======================================================================
+from app.services.svg_validator import all_passed, failure_messages, validate_svg
+
+GOOD_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <title>Test diagram</title>
+  <style>
+    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    .dot { animation: pulse 1s infinite alternate; }
+  </style>
+  <rect x="0" y="0" width="800" height="600" fill="#f5f5f5"/>
+  <circle class="dot" cx="400" cy="300" r="50" fill="blue"/>
+  <text x="400" y="60" text-anchor="middle" font-size="24">Title text</text>
+  <text x="100" y="500" font-size="16">Label one</text>
+  <text x="600" y="500" font-size="16">Label two</text>
+</svg>"""
+
+
+def failed(svg):
+    """Names of the checks that failed for this SVG."""
+    checks = validate_svg(svg)
+    return {name for name, c in checks.items() if not c["passed"]}
+
+
+def test_good_svg_passes_everything():
+    checks = validate_svg(GOOD_SVG)
+    assert all_passed(checks), failure_messages(checks)
+
+
+def test_broken_xml_fails_check_1():
+    assert "valid_xml" in failed(GOOD_SVG.replace("</svg>", ""))
+
+
+def test_not_svg_root_fails():
+    assert "valid_xml" in failed("<html><body>hello</body></html>")
+
+
+def test_doctype_is_rejected():
+    bad = '<!DOCTYPE svg [<!ENTITY x "y">]>' + GOOD_SVG
+    assert "valid_xml" in failed(bad)
+
+
+def test_circle_outside_viewbox_fails():
+    bad = GOOD_SVG.replace('cx="400" cy="300" r="50"', 'cx="780" cy="300" r="50"')
+    assert failed(bad) == {"viewbox_bounds"}
+
+
+def test_text_outside_viewbox_fails():
+    bad = GOOD_SVG.replace('x="600" y="500"', 'x="790" y="500"')
+    assert "viewbox_bounds" in failed(bad)
+
+
+def test_translate_moves_shape_outside():
+    bad = GOOD_SVG.replace(
+        '<circle class="dot"', '<g transform="translate(500,0)"><circle class="dot"'
+    ).replace('fill="blue"/>', 'fill="blue"/></g>')
+    assert "viewbox_bounds" in failed(bad)
+
+
+def test_path_is_counted_not_failed():
+    svg = GOOD_SVG.replace("</svg>", '<path d="M 0 0 L 5000 5000"/></svg>')
+    checks = validate_svg(svg)
+    assert checks["viewbox_bounds"]["passed"]
+    assert "not checked" in checks["viewbox_bounds"]["reason"]
+
+
+def test_missing_title_fails():
+    bad = GOOD_SVG.replace("<title>Test diagram</title>", "")
+    assert failed(bad) == {"title_and_labels"}
+
+
+def test_only_two_labels_fails():
+    bad = GOOD_SVG.replace('<text x="600" y="500" font-size="16">Label two</text>', "")
+    assert failed(bad) == {"title_and_labels"}
+
+
+def test_no_animation_fails():
+    bad = GOOD_SVG.replace("<style>", "<!--").replace("</style>", "-->")
+    assert failed(bad) == {"animation"}
+
+
+def test_unused_keyframes_fails():
+    bad = GOOD_SVG.replace("animation: pulse 1s infinite alternate;", "")
+    assert failed(bad) == {"animation"}
+
+
+def test_smil_animation_passes():
+    svg = GOOD_SVG.replace("<style>", "<!--").replace("</style>", "-->")
+    svg = svg.replace(
+        'fill="blue"/>',
+        'fill="blue"><animate attributeName="r" from="40" to="60" dur="1s" repeatCount="indefinite"/></circle>',
+    )
+    assert all_passed(validate_svg(svg))
+
+
+def test_script_tag_fails_security():
+    bad = GOOD_SVG.replace("</svg>", "<script>alert(1)</script></svg>")
+    assert failed(bad) == {"security"}
+
+
+def test_onclick_fails_security():
+    bad = GOOD_SVG.replace('<circle class="dot"', '<circle onclick="x()" class="dot"')
+    assert failed(bad) == {"security"}
+
+
+def test_external_image_fails_security():
+    bad = GOOD_SVG.replace(
+        "</svg>", '<image href="http://evil.com/a.png" x="0" y="0" width="10" height="10"/></svg>'
+    )
+    assert "security" in failed(bad)
+
+
+def test_internal_reference_is_allowed():
+    ok = GOOD_SVG.replace("</svg>", '<use href="#thing"/></svg>')
+    assert "security" not in failed(ok)
+
+def test_shape_moved_by_animate_motion_is_not_measured():
+    # <circle r="6"> has no cx/cy; animateMotion moves it, so (0,0) is not its real position
+    svg = GOOD_SVG.replace(
+        "</svg>",
+        '<circle r="6"><animateMotion dur="4s" repeatCount="indefinite" path="M 10 10 H 700"/></circle></svg>',
+    )
+    assert "viewbox_bounds" not in failed(svg)
+
+
+def test_css_class_text_anchor_and_size_are_respected():
+    # centred by a CSS class: x=400 is the middle, so it fits. Without reading the class, it overflows.
+    svg = GOOD_SVG.replace(
+        "</style>", ".mid { text-anchor: middle; font-size: 20px; }</style>"
+    ).replace("</svg>", '<text class="mid" x="400" y="100">A fairly long centred caption here</text></svg>')
+    assert "viewbox_bounds" not in failed(svg)
