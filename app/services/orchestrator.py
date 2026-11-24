@@ -29,6 +29,7 @@ class GenerationError(Exception):
         self.api_retries = api_retries
 
 
+
 # ------------------------------------------------------------ error helpers
 def get_status_code(error):
     """Pull an HTTP-style code (429, 503...) out of an exception, or None."""
@@ -48,7 +49,10 @@ def suggested_delay(error):
 
 
 def friendly_message(code, error):
+    if code in (400, 401, 403) and "api key" in str(error).lower():
+        return "Gemini rejected the API key. Check GEMINI_API_KEY."
     messages = {
+        # ... the rest stays exactly as it was
         429: "Gemini's rate limit was reached. Free-tier limits are low, so please wait a minute and try again.",
         503: "Gemini is overloaded right now. Please try again shortly.",
         401: "Gemini rejected the API key. Check GEMINI_API_KEY.",

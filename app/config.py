@@ -52,3 +52,7 @@ RETRY_PROFILES = {
 # --- Files and batch generation ---
 RESULTS_FILE = BASE_DIR / "data" / "results.json"
 DELAY_BETWEEN_CONCEPTS = 8   # seconds to pause between concepts (free-tier limits are low)
+
+
+# --- Live Generate button protection ---
+GENERATE_COOLDOWN_SECONDS = 10   # minimum gap between live generations (protects the free quota)
